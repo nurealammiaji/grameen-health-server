@@ -14,7 +14,7 @@ app.use(cors());
 // Routes
 app.use("/api/v1", mainRoutes);
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3200;
 const server = http.createServer(app);
 
 app.get("/", (req, res) => {
