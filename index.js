@@ -5,10 +5,11 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const mainRoutes = require("./routes/mainRoutes");
+const corsOptions = require("./configs/corsOption");
 
 // Middlewares
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Routes
 app.use("/api/v1", mainRoutes);
