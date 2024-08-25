@@ -1,11 +1,10 @@
 require("dotenv").config();
+require("./configs/database");
 const http = require("http");
 const express = require("express");
 const cors = require("cors");
-const mysql = require("mysql2");
 const app = express();
 const mainRoutes = require("./routes/mainRoutes");
-const database = require("./config/database");
 
 // Middlewares
 app.use(express.json());

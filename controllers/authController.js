@@ -1,5 +1,5 @@
 require("dotenv").config();
-const database = require("../config/database");
+const database = require("../configs/database");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -40,7 +40,7 @@ const login = (req, res) => {
         }
 
         const token = jwt.sign({ email: user.email }, secret, {
-            expiresIn: "6h",
+            expiresIn: "2h",
         });
 
         res.status(200).send({
@@ -48,12 +48,33 @@ const login = (req, res) => {
             username: user.username,
             email: user.email,
             accessToken: token,
+        });
+    });
+};
+
+const user = (req, res) => {
+    const { id } = req.params;
+    console.log(id);
+
+    database.query('SELECT * FROM users WHERE id =?', [id], (err, results) => {
+        if (err) return res.status(500).send({ message: err.message });
+
+        if (!results.length) {
+            return res.status(404).send({ message: 'User not found!' });
+        }
+
+        const user = results[0];
+
+        res.status(200).send({
+            id: user.id,
+            username: user.username,
+            email: user.email,
             full_name: user.full_name,
             address: user.address,
             phone: user.phone,
             date_of_birth: user.date_of_birth
         });
     });
-};
+}
 
-module.exports = {register, login};
+module.exports = {register, login, user};
