@@ -12,11 +12,11 @@ const register = (req, res) => {
     database.query(
         'INSERT INTO users (full_name, username, email, phone, password, address, date_of_birth) VALUES (?, ?, ?, ?, ?, ?, ?)',
         [full_name, username, email, phone, hashedPassword, address, date_of_birth],
-        (err, results) => {
+        async (err, results) => {
             if (err) {
-                return res.status(500).send({ message: err.message });
+                return await res.status(500).send({ message: err.message });
             }
-            res.status(201).send({ message: 'User registered successfully!' });
+            await res.status(201).send({ message: 'User registered successfully!' });
         }
     );
 };
@@ -25,25 +25,25 @@ const login = (req, res) => {
     const { email, password } = req.body;
     console.log(email, password);
 
-    database.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
-        if (err) return res.status(500).send({ message: err.message });
+    database.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+        if (err) return await res.status(500).send({ message: err.message });
 
         if (!results.length) {
-            return res.status(404).send({ message: 'User not found!' });
+            return await res.status(404).send({ message: 'User not found!' });
         }
 
         const user = results[0];
         const passwordIsValid = bcrypt.compareSync(password, user.password);
 
         if (!passwordIsValid) {
-            return res.status(401).send({ message: 'Invalid password!' });
+            return await res.status(401).send({ message: 'Invalid password!' });
         }
 
         const token = jwt.sign({ email: user.email }, secret, {
             expiresIn: "2h",
         });
 
-        res.status(200).send({
+        await res.status(200).send({
             id: user.id,
             accessToken: token,
         });
@@ -54,16 +54,16 @@ const user = (req, res) => {
     const { id } = req.params;
     console.log(id);
 
-    database.query('SELECT * FROM users WHERE id =?', [id], (err, results) => {
-        if (err) return res.status(500).send({ message: err.message });
+    database.query('SELECT * FROM users WHERE id =?', [id], async (err, results) => {
+        if (err) return await res.status(500).send({ message: err.message });
 
         if (!results.length) {
-            return res.status(404).send({ message: 'User not found!' });
+            return await res.status(404).send({ message: 'User not found!' });
         }
 
         const user = results[0];
 
-        res.status(200).send({
+        await res.status(200).send({
             id: user.id,
             username: user.username,
             email: user.email,
@@ -75,4 +75,4 @@ const user = (req, res) => {
     });
 }
 
-module.exports = {register, login, user};
+module.exports = { register, login, user };
