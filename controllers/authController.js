@@ -1,78 +1,87 @@
 require("dotenv").config();
-const database = require("../configs/database");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const User = require("../models/userModel");
 
 const secret = process.env.JWT_SECRET;
 
-const register = (req, res) => {
-    const { full_name, username, email, phone, password, address, date_of_birth } = req.body;
-    const hashedPassword = bcrypt.hashSync(password, 8);
+const register = async (req, res) => {
+    try {
+        const { fullName, username, email, phone, password, address, dob } = req.body;
+        const hashedPassword = bcrypt.hashSync(password, 8);
 
-    database.query(
-        'INSERT INTO users (full_name, username, email, phone, password, address, date_of_birth) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [full_name, username, email, phone, hashedPassword, address, date_of_birth],
-        async (err, results) => {
-            if (err) {
-                return await res.status(500).send({ message: err.message });
-            }
-            await res.status(201).send({ message: 'User registered successfully!' });
-        }
-    );
+        const newUser = new User({
+            fullName,
+            username,
+            email,
+            phone,
+            password: hashedPassword,
+            address,
+            dob
+        });
+
+        console.log(newUser);
+
+        await newUser.save();
+        res.status(201).send({ message: 'User registered successfully!' });
+    } catch (err) {
+        res.status(500).send({ message: err.message });
+    }
 };
 
-const login = (req, res) => {
-    const { email, password } = req.body;
-    console.log(email, password);
+const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
 
-    database.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
-        if (err) return await res.status(500).send({ message: err.message });
+        const user = await User.findOne({ email });
+        console.log(user);
 
-        if (!results.length) {
-            return await res.status(404).send({ message: 'User not found!' });
+        if (!user) {
+            return res.status(404).send({ message: 'User not found!' });
         }
 
-        const user = results[0];
         const passwordIsValid = bcrypt.compareSync(password, user.password);
-
         if (!passwordIsValid) {
-            return await res.status(401).send({ message: 'Invalid password!' });
+            return res.status(401).send({ message: 'Invalid password!' });
         }
 
         const token = jwt.sign({ email: user.email }, secret, {
             expiresIn: "2h",
         });
 
-        await res.status(200).send({
-            id: user.id,
+        res.status(200).send({
+            id: user._id,
             accessToken: token,
         });
-    });
+    } catch (err) {
+        res.status(500).send({ message: err.message });
+    }
 };
 
-const user = (req, res) => {
-    const { id } = req.params;
-    console.log(id);
+const user = async (req, res) => {
+    try {
+        const { id } = req.params;
 
-    database.query('SELECT * FROM users WHERE id =?', [id], async (err, results) => {
-        if (err) return await res.status(500).send({ message: err.message });
+        const user = await User.findById(id);
 
-        if (!results.length) {
-            return await res.status(404).send({ message: 'User not found!' });
+        console.log(user);
+        
+        if (!user) {
+            return res.status(404).send({ message: 'User not found!' });
         }
 
-        const user = results[0];
-
-        await res.status(200).send({
-            id: user.id,
+        res.status(200).send({
+            id: user._id,
             username: user.username,
             email: user.email,
-            full_name: user.full_name,
+            fullName: user.fullName,
             address: user.address,
             phone: user.phone,
-            date_of_birth: user.date_of_birth
+            dob: user.dob
         });
-    });
+    } catch (err) {
+        res.status(500).send({ message: err.message });
+    }
 }
 
 module.exports = { register, login, user };
