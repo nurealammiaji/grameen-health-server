@@ -7,17 +7,18 @@ const secret = process.env.JWT_SECRET;
 
 const register = async (req, res) => {
     try {
-        const { fullName, username, email, phone, password, address, dob } = req.body;
+        const { name, email, phone, password, address, dob, gender, role } = req.body;
         const hashedPassword = bcrypt.hashSync(password, 8);
 
         const newUser = new User({
-            fullName,
-            username,
+            name,
             email,
             phone,
             password: hashedPassword,
             address,
-            dob
+            dob,
+            gender,
+            role
         });
 
         console.log(newUser);
@@ -32,6 +33,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log(email, password);
 
         const user = await User.findOne({ email });
         console.log(user);
@@ -62,22 +64,24 @@ const user = async (req, res) => {
     try {
         const { id } = req.params;
 
+        console.log(id);
         const user = await User.findById(id);
 
         console.log(user);
-        
+
         if (!user) {
             return res.status(404).send({ message: 'User not found!' });
         }
 
         res.status(200).send({
             id: user._id,
-            username: user.username,
             email: user.email,
-            fullName: user.fullName,
+            name: user.name,
             address: user.address,
             phone: user.phone,
-            dob: user.dob
+            dob: user.dob,
+            gender: user.gender,
+            role: user.role
         });
     } catch (err) {
         res.status(500).send({ message: err.message });

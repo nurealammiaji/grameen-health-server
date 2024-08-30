@@ -1,12 +1,16 @@
+require("dotenv").config();
 const mongoose = require("mongoose");
 
-main().catch(err => console.log(err));
+const db_uri = process.env.DB_URI;
 
 async function main() {
-    await mongoose.connect('mongodb://localhost:27017/grameenhealth')
-        .then((res) => {
-            if (res) {
-                console.log("Database Connected Successfully");
-            }
-        })
+    try {
+        await mongoose.connect(db_uri);
+        console.log("Database Connected Successfully ...");
+    } catch (err) {
+        console.error("Database Connection Failed", err);
+        process.exit(1); // Exit the app if the database connection fails
+    }
 }
+
+main();

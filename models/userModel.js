@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    fullName: {
+    name: {
         type: String,
         required: true,
         trim: true
@@ -27,9 +27,18 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    gender: {
+        type: String,
+        required: true,
+        trim: true
+    },
     dob: {
-        type: Date,
+        type: String,
         required: true
+    },
+    role: {
+        type: String,
+        required: true,
     }
 }, { timestamps: true });
 
