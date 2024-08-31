@@ -1,14 +1,22 @@
-const express = require("express");
+const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const { createProduct, getAllProducts, getProductById, updateProduct, deleteProduct } = require('../controllers/productController');
+const verifyJWT = require("../middlewares/jwtVerification");
+const verifyAdmin = require("../middlewares/adminVerification");
+const {
+    createProduct,
+    getAllProducts,
+    getProductById,
+    updateProduct,
+    deleteProduct
+} = require('../controllers/productController');
 
 const productRoutes = express.Router();
 
 // Set up multer for image uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, '/path/to/your/cpanel/uploads/');
+        cb(null, 'temp/'); // Use a temporary directory for storing files before FTP upload
     },
     filename: (req, file, cb) => {
         cb(null, `${Date.now()}-${file.originalname}`);
@@ -16,7 +24,6 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-    // Accept image files only
     if (file.mimetype.startsWith('image/')) {
         cb(null, true);
     } else {
@@ -29,11 +36,11 @@ const upload = multer({
     fileFilter: fileFilter
 });
 
-// Product Routes
-productRoutes.post('/products', upload.array('images', 5), createProduct); // Handle multiple images
-productRoutes.get('/products', getAllProducts);
-productRoutes.get('/products/:id', getProductById);
-productRoutes.put('/products/:id', upload.array('images', 5), updateProduct); // Handle multiple images
-productRoutes.delete('/products/:id', deleteProduct);
+// Routes for CRUD operations
+productRoutes.post('/products', verifyJWT, upload.array('images', 5), createProduct); // Create a new product with up to 5 images
+productRoutes.get('/products', getAllProducts); // Get all products
+productRoutes.get('/products/:id', getProductById); // Get a product by ID
+productRoutes.put('/products/:id', verifyJWT, upload.array('images', 5), updateProduct); // Update a product by ID with up to 5 new images
+productRoutes.delete('/products/:id', verifyJWT, deleteProduct); // Delete a product by ID
 
 module.exports = productRoutes;
