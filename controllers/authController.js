@@ -13,12 +13,21 @@ const register = async (req, res) => {
         const { name, email, phone, password, address, dob, gender, role } = req.body;
         const hashedPassword = bcrypt.hashSync(password, 8);
         let imagePath = null;
+        console.log("hitted", req.body, req.file);
+
+        const existingUser = await User.findOne({email: email});
+
+        if (existingUser) {
+            console.log("User already exist !!");
+            return res.status(401).send({ message: 'User already exist!' });
+        }
 
         if (req.file) {
             const localPath = req.file.path;
             imagePath = `uploads/${path.basename(localPath)}`;
             await uploadFile(localPath, imagePath);
         }
+        console.log(imagePath);
 
         const newUser = new User({
             name,
@@ -38,6 +47,7 @@ const register = async (req, res) => {
         res.status(500).send({ message: err.message });
     } finally {
         if (req.file) {
+            console.log(req.file);
             fs.unlinkSync(req.file.path);
         }
     }
