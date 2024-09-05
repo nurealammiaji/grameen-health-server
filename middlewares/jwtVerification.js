@@ -1,4 +1,7 @@
+require("dotenv").config();
 const jwt = require('jsonwebtoken');
+
+const secret = process.env.JWT_SECRET;
 
 const verifyToken = async (req, res, next) => {
 
@@ -14,7 +17,7 @@ const verifyToken = async (req, res, next) => {
         return await res.status(403).send({ message: 'No token provided!' });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+    jwt.verify(token, secret, async (err, decoded) => {
         if (err) {
             return await res.status(401).send({ message: 'Unauthorized!' });
         }

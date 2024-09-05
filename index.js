@@ -1,5 +1,5 @@
 require("dotenv").config();
-require("./configs/connection");
+const connectDB = require("./configs/db");
 const http = require("http");
 const express = require("express");
 const cors = require("cors");
@@ -16,6 +16,8 @@ app.use("/api/v1", mainRoutes);
 
 const port = process.env.PORT || 5000;
 const server = http.createServer(app);
+
+connectDB();
 
 app.get("/", (req, res) => {
     res.send("Grameen Health Server is running ...");
