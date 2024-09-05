@@ -1,6 +1,7 @@
 require("dotenv").config();
 const connectDB = require("./configs/db");
 const http = require("http");
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -9,7 +10,9 @@ const corsOptions = require("./configs/corsOption");
 
 // Middlewares
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsOptions));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use("/api/v1", mainRoutes);

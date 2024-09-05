@@ -5,46 +5,87 @@ const User = require('../models/userModel');
 
 const secret = process.env.JWT_SECRET;
 
+// const register = async (req, res) => {
+//     try {
+//         const { name, email, password } = req.body;
+//         const hashedPassword = bcrypt.hashSync(password, 8);
+
+//         const newUser = new User({
+//             name,
+//             email,
+//             password: hashedPassword,
+//         });
+
+//         await newUser.save();
+//         res.status(201).send({ message: 'User registered successfully!' });
+//     } catch (err) {
+//         res.status(500).send({ message: err.message });
+//     }
+// };
+
 const register = async (req, res) => {
     const { name, email, password } = req.body;
+    console.log(req.body);
+    console.log(req.file);
 
     try {
-        const existUser = await User.findOne({ email });
-
-        if (existUser) {
-            return res.status(409).json({ error: 'User already exist' });
+        // Check if user already exists
+        let existingUser = await User.findOne({ email });
+        if (existingUser) {
+            console.log("User already exists");
+            return res.status(400).json({ error: 'User already exists' });
         }
 
-        const user = new User({ name, email, password });
-        await user.save();
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
-        const token = jwt.sign({ email: user.email }, secret, {
-            expiresIn: '1h',
+        // Create new user object
+        const newUser = new User({
+            name,
+            email,
+            password: hashedPassword,
+            image: req.file ? `/uploads/images/${req.file.filename}` : null, // Store image path
         });
 
-        res.status(201).json({ token, user: { name, email, image: user.image } });
+        console.log({ newUser });
+        // Save user to DB
+        const user = await newUser.save();
+
+        const token = jwt.sign({ email: email }, secret, {
+            expiresIn: "2h",
+        });
+
+        res.status(201).json({ message: 'User registered successfully', user: user, id: user._id, accessToken: token });
     } catch (error) {
-        res.status(400).json({ error: 'User registration failed' });
+        res.status(500).json({ error: 'User registration failed' });
     }
 };
 
 const login = async (req, res) => {
-    const { email, password } = req.body;
-
     try {
-        const user = await User.findOne({ email });
-        if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(400).json({ error: 'Invalid credentials' });
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email: email });
+        if (!user) {
+            return res.status(404).send({ message: 'User not found!' });
+        }
+
+        const passwordIsValid = bcrypt.compareSync(password, user.password);
+        if (!passwordIsValid) {
+            return res.status(401).send({ message: 'Invalid password!' });
         }
 
         const token = jwt.sign({ email: user.email }, secret, {
-            expiresIn: '1h',
+            expiresIn: "2h",
         });
 
-        // user: { name: user.name, email, image: user.image } 
-        res.json(token, user._id);
-    } catch (error) {
-        res.status(500).json({ error: 'Login failed' });
+        res.status(200).send({
+            id: user._id,
+            accessToken: token,
+        });
+    } catch (err) {
+        res.status(500).send({ message: err.message });
     }
 };
 

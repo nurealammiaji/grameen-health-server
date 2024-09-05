@@ -12,13 +12,13 @@ const upload = require('../middlewares/uploadMiddleware');
 const userRoutes = express.Router();
 
 // User Image Routes
-userRoutes.post('/upload-image', verifyJWT, upload.single('image'), uploadImage);
-userRoutes.put('/update-image', verifyJWT, upload.single('image'), updateImage);
+userRoutes.post('/users/upload-image', verifyJWT, upload.single('image'), uploadImage);
+userRoutes.put('/users/update-image', verifyJWT, upload.single('image'), updateImage);
 userRoutes.delete('/delete-image', verifyJWT, deleteImage);
 // User Routes
-userRoutes.get("/:id", verifyJWT, getUser);
-userRoutes.put('/update-user', verifyJWT, updateUser);
-userRoutes.delete('/delete-user', verifyJWT, deleteUser);
+userRoutes.get("/users/:id", verifyJWT, getUser);
+userRoutes.put('/users/update-user', verifyJWT, updateUser);
+userRoutes.delete('/users/delete-user', verifyJWT, deleteUser);
 
 module.exports = userRoutes;
 
