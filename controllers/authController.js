@@ -5,24 +5,6 @@ const User = require('../models/userModel');
 
 const secret = process.env.JWT_SECRET;
 
-// const register = async (req, res) => {
-//     try {
-//         const { name, email, password } = req.body;
-//         const hashedPassword = bcrypt.hashSync(password, 8);
-
-//         const newUser = new User({
-//             name,
-//             email,
-//             password: hashedPassword,
-//         });
-
-//         await newUser.save();
-//         res.status(201).send({ message: 'User registered successfully!' });
-//     } catch (err) {
-//         res.status(500).send({ message: err.message });
-//     }
-// };
-
 const register = async (req, res) => {
     const { name, email, password } = req.body;
     console.log(req.body);
@@ -45,7 +27,7 @@ const register = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            image: req.file ? `/uploads/images/${req.file.filename}` : null, // Store image path
+            image: req.file ? `/uploads/images/users/${req.file.filename}` : null, // Store image path
         });
 
         console.log({ newUser });

@@ -1,4 +1,4 @@
-const allowedOrigins = ['http://localhost:5173', 'https://another-origin.com'];
+const allowedOrigins = ['http://localhost:5173', 'https://grameen.com.bd'];
 
 const corsOptions = {
     origin: function (origin, callback) {
@@ -8,7 +8,8 @@ const corsOptions = {
             callback(new Error('Not allowed by CORS'));
         }
     },
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: ['GET, HEAD, PUT, PATCH, POST, DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
 };
 

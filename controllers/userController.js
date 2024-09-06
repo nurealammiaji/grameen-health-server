@@ -8,7 +8,7 @@ const uploadImage = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        user.image = `/uploads/images/${req.file.filename}`;
+        user.image = `/uploads/images/users/${req.file.filename}`;
         await user.save();
 
         res.json({ message: 'Image uploaded successfully', image: user.image });
@@ -33,7 +33,7 @@ const updateImage = async (req, res) => {
         }
 
         // Update with the new image
-        user.image = `/uploads/images/${req.file.filename}`;
+        user.image = `/uploads/images/users/${req.file.filename}`;
         await user.save();
 
         res.json({ message: 'Image updated successfully', image: user.image });
