@@ -8,9 +8,15 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
+        unique: true,
+        trim: true,
+        default: null
+    },
+    phone: {
+        type: String,
         required: true,
         unique: true,
-        trim: true
+        trim: true,
     },
     password: {
         type: String,
@@ -19,9 +25,17 @@ const userSchema = new mongoose.Schema({
     image: {
         type: String,
     },
+    address: {
+        type: String,
+        default: null
+    },
     role: {
         type: String,
         default: "customer",
+    },
+    status: {
+        type: String,
+        default: "active",
     }
 }, { timestamps: true });
 
