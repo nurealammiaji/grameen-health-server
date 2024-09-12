@@ -1,34 +1,42 @@
 const mongoose = require('mongoose');
 
-const variantSchema = new mongoose.Schema({
-    color: {
+const productVariantSchema = new mongoose.Schema({
+    variantName: {
         type: String,
         required: true
     },
-    size: {
+    variantColor: {
         type: String,
         required: true
     },
-    additionalPrice: {
+    variantPrice: {
         type: Number,
-        default: 0
-    }
+        required: true
+    },
+    variantImage: {
+        type: String,
+    },
 });
 
 const productSchema = new mongoose.Schema({
     name: {
-        type: String,
-        required: true
+        type: String, required: true
+    },
+    description: {
+        type: String
     },
     price: {
+        type: Number, required: true
+    },
+    sourcingPrice: {
         type: Number,
         required: true
     },
-    description: {
+    image: {
         type: String,
-    },
-    images: [String], // Array to store paths of multiple images
-    variants: [variantSchema], // Array to store product variants
+        required: true
+    }, // URL for product image
+    variants: [productVariantSchema], // Array of product variants
 }, { timestamps: true });
 
 const Product = mongoose.model('Product', productSchema);
