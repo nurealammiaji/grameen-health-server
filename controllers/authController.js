@@ -7,12 +7,11 @@ const secret = process.env.JWT_SECRET;
 
 const register = async (req, res) => {
     const { name, phone, password } = req.body;
-    console.log(req.body);
-    console.log(req.file);
+    console.log({name, phone, password});
 
     try {
         // Check if user already exists
-        let existingUser = await User.findOne({ phone: phone });
+        let existingUser = await User.findOne({ phone });
         if (existingUser) {
             console.log("User already exists");
             return res.status(400).json({ error: 'User already exists' });
@@ -30,7 +29,6 @@ const register = async (req, res) => {
             image: req.file ? `/uploads/images/users/${req.file.filename}` : null, // Store image path
         });
 
-        console.log({ newUser });
         // Save user to DB
         const user = await newUser.save();
 

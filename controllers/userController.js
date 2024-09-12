@@ -84,7 +84,7 @@ const getUser = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, phone, password } = req.body;
 
     try {
         const user = await User.findById(req.user.userId);
@@ -93,7 +93,7 @@ const updateUser = async (req, res) => {
         }
 
         if (name) user.name = name;
-        if (email) user.email = email;
+        if (phone) user.phone = phone;
         if (password) {
             const salt = await bcrypt.genSalt(10);
             user.password = await bcrypt.hash(password, salt);
