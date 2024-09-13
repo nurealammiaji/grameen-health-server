@@ -1,11 +1,5 @@
 const express = require('express');
-const {
-    uploadImage,
-    updateUser,
-    deleteUser,
-    updateImage,
-    deleteImage,
-    getUser
+const { uploadImage, updateUser, deleteUser, updateImage, deleteImage, getUser
 } = require('../controllers/userController');
 const verifyJWT = require("../middlewares/jwtVerification");
 const upload = require('../middlewares/uploadMiddleware');

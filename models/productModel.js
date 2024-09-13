@@ -1,42 +1,58 @@
 const mongoose = require('mongoose');
 
-const productVariantSchema = new mongoose.Schema({
-    variantName: {
-        type: String,
-        required: true
-    },
-    variantColor: {
-        type: String,
-        required: true
-    },
-    variantPrice: {
-        type: Number,
-        required: true
-    },
-    variantImage: {
-        type: String,
-    },
-});
-
 const productSchema = new mongoose.Schema({
-    name: {
-        type: String, required: true
+    name:
+    {
+        type: String,
+        required: true
     },
-    description: {
-        type: String
+    description:
+    {
+        type: String,
+        required: true
     },
     price: {
-        type: Number, required: true
-    },
-    sourcingPrice: {
         type: Number,
         required: true
     },
-    image: {
+    specialPrice: {
+        type: Number,
+    },
+    category: {
         type: String,
         required: true
-    }, // URL for product image
-    variants: [productVariantSchema], // Array of product variants
+    },
+    subCategory: {
+        type: String,
+        required: true
+    },
+    model: {
+        type: String,
+    },
+    variants: [
+        {
+            name: String,
+            color: String,
+            size: String
+        }
+    ],
+    images: [String], // Array of image file paths
+    brand: {
+        type: String,
+    },
+    origin: {
+        type: String,
+    },
+    manufacturer: {
+        type: String,
+    },
+    marketer: {
+        type: String,
+    },
+    status: {
+        type: String,
+        default: "pending",
+    }
 }, { timestamps: true });
 
 const Product = mongoose.model('Product', productSchema);
