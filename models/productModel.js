@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
+    type: {
+        type: String,
+        default: "product"
+    },
     name:
     {
         type: String,
@@ -17,6 +21,7 @@ const productSchema = new mongoose.Schema({
     },
     specialPrice: {
         type: Number,
+        default: null
     },
     category: {
         type: String,
@@ -28,27 +33,39 @@ const productSchema = new mongoose.Schema({
     },
     model: {
         type: String,
+        default: null
     },
-    variants: [
-        {
-            name: String,
-            color: String,
-            size: String
-        }
-    ],
-    images: [String], // Array of image file paths
+    variants: {
+        type: Array,
+        default: null
+    },
+    images: {
+        type: Array,
+    }, // Array of image file paths
     brand: {
         type: String,
+        default: null
     },
-    origin: {
+    originCountry: {
         type: String,
+        default: null
     },
     manufacturer: {
         type: String,
+        default: null
     },
-    marketer: {
-        type: String,
-    },
+    // importer: {
+    //     type: String,
+    //     default: null
+    // },
+    // distributor: {
+    //     type: String,
+    //     default: null
+    // },
+    // marketer: {
+    //     type: String,
+    //     default: "Grameen Health"
+    // },
     status: {
         type: String,
         default: "pending",

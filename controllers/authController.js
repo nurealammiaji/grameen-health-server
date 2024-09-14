@@ -7,6 +7,7 @@ const secret = process.env.JWT_SECRET;
 
 const register = async (req, res) => {
     const { name, phone, password } = req.body;
+    const profileImage = req.file.path;
     console.log({ name, phone, password });  // Log incoming data
 
     try {
@@ -27,7 +28,8 @@ const register = async (req, res) => {
             name,
             phone,
             password: hashedPassword,
-            image: req.file ? `/uploads/images/users/${req.file.filename}` : null, // Store image path
+            // image: req.file ? `/uploads/images/users/${req.file.filename}` : null, // Store image path
+            image: profileImage
         });
 
         // Save user to DB

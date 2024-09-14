@@ -1,23 +1,29 @@
 const Product = require('../models/productModel');
+const path = require('path');
 
 // Create product with multiple images
 const createProduct = async (req, res) => {
   try {
-    const { name, description, price, category, variants } = req.body;
-    const images = req.files.map(file => file.path); // Multer file paths
+    const { name, description, price, category, subCategory, variants } = req.body;
+    const images = req.files.map(file => file.path);
+
+    console.log({ name, description, price, category, variants });
 
     const newProduct = new Product({
       name,
       description,
       price,
       category,
+      subCategory,
       variants,
       images
     });
 
+    console.log(newProduct);
     await newProduct.save();
     res.status(201).json(newProduct);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: 'Failed to create product', error });
   }
 };
