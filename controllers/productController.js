@@ -1,13 +1,11 @@
 const Product = require('../models/productModel');
-const path = require('path');
+const fs = require('fs');
 
 // Create product with multiple images
 const createProduct = async (req, res) => {
   try {
     const { name, description, price, category, subCategory, variants } = req.body;
     const images = req.files.map(file => file.path);
-
-    console.log({ name, description, price, category, variants });
 
     const newProduct = new Product({
       name,
@@ -19,11 +17,9 @@ const createProduct = async (req, res) => {
       images
     });
 
-    console.log(newProduct);
     await newProduct.save();
     res.status(201).json(newProduct);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: 'Failed to create product', error });
   }
 };
@@ -34,8 +30,6 @@ const updateProduct = async (req, res) => {
     const { id } = req.params;
     const { name, description, price, category, variants } = req.body;
     const images = req.files.map(file => file.path);
-
-    console.log({ name, description, price, category, variants });
 
     const updatedProduct = await Product.findByIdAndUpdate(id, {
       name,
@@ -83,21 +77,49 @@ const getSingleProduct = async (req, res) => {
 };
 
 // Delete product
+// const deleteProduct = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const deletedProduct = await Product.findByIdAndDelete(id);
+
+//     if (!deletedProduct) {
+//       return res.status(404).json({ message: 'Product not found' });
+//     }
+
+//     res.status(200).json({ message: 'Product deleted successfully' });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Failed to delete product', error });
+//   }
+// };
+
 const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedProduct = await Product.findByIdAndDelete(id);
+    const product = await Product.findById(id);
 
-    console.log(id, deletedProduct);
-
-    if (!deletedProduct) {
+    if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    res.status(200).json({ message: 'Product deleted successfully' });
+    // Delete image files from the server
+    product.images.forEach(imagePath => {
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error(`Failed to delete image: ${imagePath}`, err);
+        } else {
+          console.log(`Image deleted: ${imagePath}`);
+        }
+      });
+    });
+
+    // Delete product from the database
+    await Product.findByIdAndDelete(id);
+
+    res.status(200).json({ message: 'Product and associated images deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to delete product', error });
   }
 };
+
 
 module.exports = { createProduct, getSingleProduct, getAllProducts, updateProduct, deleteProduct };

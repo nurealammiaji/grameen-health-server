@@ -1,18 +1,25 @@
 const express = require('express');
-const { uploadImage, updateUser, deleteUser, updateImage, deleteImage, getUser
-} = require('../controllers/userController');
+const { updateUser, deleteUser, getAllUsers, getSingleUser } = require('../controllers/userController');
 const verifyJWT = require("../middlewares/jwtVerification");
 const upload = require('../middlewares/uploadMiddleware');
 const userRoutes = express.Router();
 
-// User Image Routes
-userRoutes.post('/users/upload-image', verifyJWT, upload.single('image'), uploadImage);
-userRoutes.put('/users/update-image', verifyJWT, upload.single('image'), updateImage);
-userRoutes.delete('/delete-image', verifyJWT, deleteImage);
 // User Routes
-userRoutes.get("/users/:id", verifyJWT, getUser);
-userRoutes.put('/users/update-user', verifyJWT, updateUser);
-userRoutes.delete('/users/delete-user', verifyJWT, deleteUser);
+// userRoutes.get("/users/:id", verifyJWT, getUser);
+// userRoutes.put('/users/update', verifyJWT, updateUser);
+// userRoutes.delete('/users/delete', verifyJWT, deleteUser);
+
+// Update user with image (based on user ID)
+userRoutes.put('/users/update/:id', upload.single('image'), updateUser);
+
+// Delete user (along with image) by ID
+userRoutes.delete('/users/delete/:id', deleteUser);
+
+// Get single user by ID
+userRoutes.get('/users/:id', getSingleUser);
+
+// Get all users
+userRoutes.get('/users', getAllUsers);
 
 module.exports = userRoutes;
 
