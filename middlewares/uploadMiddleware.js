@@ -2,6 +2,13 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 
+// for unique Id
+let nanoid;
+(async () => {
+    const module = await import('nanoid');
+    nanoid = module.nanoid;
+})();
+
 // Multer storage configuration with dynamic paths based on type
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -18,15 +25,26 @@ const storage = multer.diskStorage({
         }
 
         // Ensure the directory exists
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
-        }
-
-        cb(null, uploadPath);  // Set the destination for the file
+        fs.mkdir(uploadPath, { recursive: true }, (err) => {
+            if (err) return cb(err);
+            cb(null, uploadPath);  // Set the destination for the file
+        });
     },
     filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + '-' + file.originalname);  // Generate a unique file name
+        const uniqueId = nanoid(8);  // Generate a short unique ID
+        const extName = path.extname(file.originalname);  // Get the file extension
+        const type = req.body.type;
+
+        let filename;
+        if (type === 'user') {
+            filename = `usr-${uniqueId}${extName}`;
+        } else if (type === 'product') {
+            filename = `prd-${uniqueId}${extName}`;
+        } else {
+            return cb(new Error('Unknown upload type'));
+        }
+
+        cb(null, filename);
     }
 });
 
@@ -46,46 +64,8 @@ const fileFilter = (req, file, cb) => {
 // Multer middleware configuration
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 1024 * 1024 * 5 },  // Limit file size to 5MB
+    limits: { fileSize: 1024 * 1024 * 1 },  // Limit file size to 5MB
     fileFilter: fileFilter
 });
 
 module.exports = upload;
-
-
-
-
-// const multer = require('multer');
-// const path = require('path');
-
-// // Define where to store uploaded images and how to name them
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, 'uploads/images');
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, Date.now() + path.extname(file.originalname)); // e.g., '123456789.png'
-//   },
-// });
-
-// // File filtering to allow only image uploads
-// const fileFilter = (req, file, cb) => {
-//   const allowedTypes = /jpeg|jpg|png|gif/;
-//   const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-//   const mimetype = allowedTypes.test(file.mimetype);
-
-//   if (extname && mimetype) {
-//     return cb(null, true);
-//   } else {
-//     cb('Images only!');
-//   }
-// };
-
-// // Middleware for handling single image uploads
-// const upload = multer({
-//   storage: storage,
-//   limits: { fileSize: 1024 * 1024 * 1 }, // 1MB size limit
-//   fileFilter: fileFilter,
-// });
-
-// module.exports = upload;

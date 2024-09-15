@@ -7,7 +7,7 @@ const secret = process.env.JWT_SECRET;
 
 const register = async (req, res) => {
     const { name, phone, password } = req.body;
-    const profileImage = req.file.path;
+    const profileImage = req.file ? req.file.path : null;
     console.log({ name, phone, password });  // Log incoming data
 
     try {

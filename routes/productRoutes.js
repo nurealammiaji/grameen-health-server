@@ -8,6 +8,6 @@ productsRoutes.post('/products/create', upload.array('images', 5), createProduct
 productsRoutes.put('/products/update/:id', upload.array('images', 5), updateProduct);
 productsRoutes.get('/products', getAllProducts);
 productsRoutes.get('/products/:id', getSingleProduct);
-productsRoutes.delete('products/:id', deleteProduct);
+productsRoutes.delete('/products/:id', deleteProduct);
 
 module.exports = productsRoutes;

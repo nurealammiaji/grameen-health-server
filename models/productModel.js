@@ -41,7 +41,7 @@ const productSchema = new mongoose.Schema({
     },
     images: {
         type: Array,
-    }, // Array of image file paths
+    },
     brand: {
         type: String,
         default: null

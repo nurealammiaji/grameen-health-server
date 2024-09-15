@@ -35,6 +35,8 @@ const updateProduct = async (req, res) => {
     const { name, description, price, category, variants } = req.body;
     const images = req.files.map(file => file.path);
 
+    console.log({ name, description, price, category, variants });
+
     const updatedProduct = await Product.findByIdAndUpdate(id, {
       name,
       description,
@@ -85,6 +87,8 @@ const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const deletedProduct = await Product.findByIdAndDelete(id);
+
+    console.log(id, deletedProduct);
 
     if (!deletedProduct) {
       return res.status(404).json({ message: 'Product not found' });
