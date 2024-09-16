@@ -12,27 +12,29 @@ let nanoid;
 // Multer storage configuration with dynamic paths based on type
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const type = req.body.type || req.query.type || 'unknown';  // Getting type from body or query
+        const type = req.body.type || req.query.type || 'unknown';
 
-        // Define the base path for user and product uploads
+        // Define the base path for user, product and carousel uploads
         let uploadPath;
         if (type === 'user') {
             uploadPath = 'uploads/images/users';
         } else if (type === 'product') {
             uploadPath = 'uploads/images/products';
+        } else if (type === 'carousel') {
+            uploadPath = 'uploads/images/carousels';
         } else {
-            return cb(new Error('Unknown upload type'));  // Handling unknown type
+            return cb(new Error('Unknown upload type'));
         }
 
         // Ensure the directory exists
         fs.mkdir(uploadPath, { recursive: true }, (err) => {
             if (err) return cb(err);
-            cb(null, uploadPath);  // Set the destination for the file
+            cb(null, uploadPath);
         });
     },
     filename: function (req, file, cb) {
-        const uniqueId = nanoid(8);  // Generate a short unique ID
-        const extName = path.extname(file.originalname);  // Get the file extension
+        const uniqueId = nanoid(8);
+        const extName = path.extname(file.originalname);
         const type = req.body.type;
 
         let filename;
@@ -40,6 +42,8 @@ const storage = multer.diskStorage({
             filename = `usr-${uniqueId}${extName}`;
         } else if (type === 'product') {
             filename = `prd-${uniqueId}${extName}`;
+        } else if (type === 'carousel') {
+            filename = `crs-${uniqueId}${extName}`;
         } else {
             return cb(new Error('Unknown upload type'));
         }
@@ -64,7 +68,7 @@ const fileFilter = (req, file, cb) => {
 // Multer middleware configuration
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 1024 * 1024 * 1 },  // Limit file size to 5MB
+    limits: { fileSize: 1024 * 1024 * 1 },
     fileFilter: fileFilter
 });
 

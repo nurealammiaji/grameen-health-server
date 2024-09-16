@@ -1,5 +1,6 @@
 const Product = require('../models/productModel');
-const fs = require('fs');
+const path = require("path");
+const fs = require('fs').promises;
 
 // Create product with multiple images
 const createProduct = async (req, res) => {
@@ -26,26 +27,46 @@ const createProduct = async (req, res) => {
 
 // Update product with multiple images
 const updateProduct = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { name, description, price, category, variants } = req.body;
-    const images = req.files.map(file => file.path);
+  const { id } = req.params;
+  const { name, description, price, category, variants } = req.body;
+  const newImages = req.files ? req.files.map(file => file.path) : []; // Handle uploaded images
 
-    const updatedProduct = await Product.findByIdAndUpdate(id, {
-      name,
-      description,
-      price,
-      category,
-      variants,
-      images
-    }, { new: true });
+  try {
+    // Find the existing product
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // Determine images to delete (those not in the new images list)
+    const imagesToDelete = product.images.filter(imagePath => !newImages.includes(imagePath));
+
+    // Delete old images
+    await Promise.all(imagesToDelete.map(imagePath =>
+      fs.unlink(imagePath).catch(err => console.error(`Failed to delete image: ${imagePath}`, err))
+    ));
+
+    // Prepare fields to update
+    const updatedFields = {
+      name: name || product.name,
+      description: description || product.description,
+      price: price || product.price,
+      category: category || product.category,
+      variants: variants || product.variants,
+      images: newImages.length > 0 ? newImages : product.images
+    };
+
+    // Update the product
+    const updatedProduct = await Product.findByIdAndUpdate(id, updatedFields, { new: true });
 
     if (!updatedProduct) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
+    // Respond with the updated product
     res.status(200).json(updatedProduct);
   } catch (error) {
+    console.error("Error during product update:", error);
     res.status(500).json({ message: 'Failed to update product', error });
   }
 };
@@ -76,47 +97,34 @@ const getSingleProduct = async (req, res) => {
   }
 };
 
-// Delete product
-// const deleteProduct = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const deletedProduct = await Product.findByIdAndDelete(id);
-
-//     if (!deletedProduct) {
-//       return res.status(404).json({ message: 'Product not found' });
-//     }
-
-//     res.status(200).json({ message: 'Product deleted successfully' });
-//   } catch (error) {
-//     res.status(500).json({ message: 'Failed to delete product', error });
-//   }
-// };
-
 const deleteProduct = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const product = await Product.findById(id);
+  const { id } = req.params;
 
+  try {
+    // Find the product to delete
+    const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
     // Delete image files from the server
-    product.images.forEach(imagePath => {
-      fs.unlink(imagePath, (err) => {
-        if (err) {
+    if (product.images.length > 0) {
+      const deletePromises = product.images.map(imagePath =>
+        fs.unlink(imagePath).catch(err => {
           console.error(`Failed to delete image: ${imagePath}`, err);
-        } else {
-          console.log(`Image deleted: ${imagePath}`);
-        }
-      });
-    });
+        })
+      );
+
+      await Promise.all(deletePromises);
+      console.log(`Deleted ${product.images.length} images successfully.`);
+    }
 
     // Delete product from the database
     await Product.findByIdAndDelete(id);
 
     res.status(200).json({ message: 'Product and associated images deleted successfully' });
   } catch (error) {
+    console.error("Error during product deletion:", error);
     res.status(500).json({ message: 'Failed to delete product', error });
   }
 };

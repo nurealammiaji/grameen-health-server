@@ -28,7 +28,6 @@ const register = async (req, res) => {
             name,
             phone,
             password: hashedPassword,
-            // image: req.file ? `/uploads/images/users/${req.file.filename}` : null, // Store image path
             image: profileImage
         });
 

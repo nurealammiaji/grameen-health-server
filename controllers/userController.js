@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const User = require('../models/userModel');
 
@@ -8,16 +8,20 @@ const updateUser = async (req, res) => {
     const profileImage = req.file ? req.file.path : null;
 
     try {
+        // Find the existing user
         const user = await User.findById(id);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // If a new image is uploaded, delete the old one
+        // Delete old profile image if a new one is uploaded
         if (profileImage && user.image) {
-            fs.unlink(user.image, (err) => {
-                if (err) console.error("Failed to delete old image", err);
-            });
+            try {
+                await fs.unlink(user.image);
+                console.log(`Old image deleted: ${user.image}`);
+            } catch (err) {
+                console.error(`Failed to delete old image: ${user.image}`, err);
+            }
         }
 
         // Hash new password if provided
@@ -28,12 +32,16 @@ const updateUser = async (req, res) => {
         }
 
         // Update user fields
-        user.name = name || user.name;
-        user.phone = phone || user.phone;
-        user.password = hashedPassword;
-        user.image = profileImage || user.image;
+        const updatedUser = await User.findByIdAndUpdate(id, {
+            name: name || user.name,
+            phone: phone || user.phone,
+            password: password ? hashedPassword : user.password,
+            image: profileImage || user.image
+        }, { new: true });
 
-        const updatedUser = await user.save();
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
         res.status(200).json({ message: 'User updated successfully', user: updatedUser });
     } catch (error) {
@@ -72,18 +80,23 @@ const deleteUser = async (req, res) => {
     const { id } = req.params;
 
     try {
+        // Find the user to delete
         const user = await User.findById(id);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Delete user image if exists
+        // Delete the user's image if it exists
         if (user.image) {
-            fs.unlink(user.image, (err) => {
-                if (err) console.error("Failed to delete user image", err);
-            });
+            try {
+                await fs.unlink(user.image);
+                console.log(`Deleted user image: ${user.image}`);
+            } catch (err) {
+                console.error(`Failed to delete user image: ${user.image}`, err);
+            }
         }
 
+        // Delete the user from the database
         await User.findByIdAndDelete(id);
 
         res.status(200).json({ message: 'User deleted successfully' });
