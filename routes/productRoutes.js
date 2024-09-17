@@ -6,8 +6,8 @@ const upload = require('../middlewares/uploadMiddleware'); // Multer middleware 
 // Routes
 productsRoutes.post('/products/create', upload.array('images', 5), createProduct);
 productsRoutes.put('/products/update/:id', upload.array('images', 5), updateProduct);
-productsRoutes.get('/products', getAllProducts);
-productsRoutes.get('/products/:id', getSingleProduct);
+productsRoutes.get('/products/get', getAllProducts);
+productsRoutes.get('/products/get/:id', getSingleProduct);
 productsRoutes.delete('/products/delete/:id', deleteProduct);
 
 module.exports = productsRoutes;

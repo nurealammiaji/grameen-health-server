@@ -6,8 +6,8 @@ const userRoutes = express.Router();
 
 userRoutes.put('/users/update/:id', verifyJWT, upload.single('image'), updateUser);
 userRoutes.delete('/users/delete/:id', verifyJWT, deleteUser);
-userRoutes.get('/users/:id', verifyJWT, getSingleUser);
-userRoutes.get('/users', verifyJWT, getAllUsers);
+userRoutes.get('/users/get/:id', verifyJWT, getSingleUser);
+userRoutes.get('/users/get', verifyJWT, getAllUsers);
 
 module.exports = userRoutes;
 
