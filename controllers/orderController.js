@@ -1,22 +1,43 @@
 const Order = require('../models/orderModel');
 
-// Create a new order
+// Function to calculate shipping charge based on delivery address
+const calculateShippingCharge = (deliveryAddress) => {
+    const cityKeyword = 'City';  // Define the keyword for determining if inside the city
+    return deliveryAddress.includes(cityKeyword) ? 100 : 150;
+};
+
+// Create a new order with conditional shipping charge
 const createOrder = async (req, res) => {
     try {
-        const { userId, products, total, status, deliveryAddress, paymentMethod, paymentInfo } = req.body;
+        const { userId, products, deliveryAddress, paymentMethod, paymentInfo, additionalShippingFee = 0 } = req.body;
 
+        // Calculate total price of products
+        let totalPrice = 0;
+        products.forEach(item => {
+            totalPrice += item.quantity * item.price;
+        });
+
+        // Calculate shipping charge
+        const shippingCharge = calculateShippingCharge(deliveryAddress);
+
+        // Calculate total order cost including shipping charges
+        const total = totalPrice + shippingCharge + additionalShippingFee;
+
+        // Create the new order
         const newOrder = new Order({
             userId,
             products,
-            total,
-            status,
             deliveryAddress,
+            total,
+            shippingCharge,
+            additionalShippingFee,
             paymentMethod,
             paymentInfo
         });
 
-        const savedOrder = await newOrder.save();
-        res.status(201).json(savedOrder);
+        // Save the order to the database
+        await newOrder.save();
+        res.status(201).json(newOrder);
     } catch (error) {
         res.status(500).json({ message: 'Failed to create order', error: error.message });
     }
@@ -24,18 +45,41 @@ const createOrder = async (req, res) => {
 
 // Update an existing order
 const updateOrder = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const updatedOrderData = req.body;
+    const { id } = req.params;
+    const { products, deliveryAddress, paymentMethod, paymentInfo, additionalShippingFee = 0 } = req.body;
 
-        const updatedOrder = await Order.findByIdAndUpdate(id, updatedOrderData, { new: true });
+    try {
+        // Find the existing order
+        const order = await Order.findById(id);
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        // Calculate shipping charge
+        const shippingCharge = calculateShippingCharge(deliveryAddress);
+
+        // Prepare fields to update
+        const updatedFields = {
+            products: products || order.products,
+            deliveryAddress: deliveryAddress || order.deliveryAddress,
+            paymentMethod: paymentMethod || order.paymentMethod,
+            paymentInfo: paymentInfo || order.paymentInfo,
+            shippingCharge,
+            additionalShippingFee,
+            total: (order.totalPrice || 0) + shippingCharge + additionalShippingFee
+        };
+
+        // Update the order
+        const updatedOrder = await Order.findByIdAndUpdate(id, updatedFields, { new: true });
 
         if (!updatedOrder) {
             return res.status(404).json({ message: 'Order not found' });
         }
 
+        // Respond with the updated order
         res.status(200).json(updatedOrder);
     } catch (error) {
+        console.error("Error during order update:", error);
         res.status(500).json({ message: 'Failed to update order', error: error.message });
     }
 };
@@ -84,6 +128,5 @@ const deleteOrder = async (req, res) => {
         res.status(500).json({ message: 'Failed to delete order', error: error.message });
     }
 };
-
 
 module.exports = { createOrder, updateOrder, getSingleOrder, getAllOrders, deleteOrder };

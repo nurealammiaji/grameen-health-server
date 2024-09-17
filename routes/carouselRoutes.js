@@ -2,12 +2,7 @@ const express = require('express');
 const carouselRoutes = express.Router();
 const upload = require('../middlewares/uploadMiddleware');
 // Import the controller functions
-const {
-    createCarousel,
-    updateCarousel,
-    getCarousel,
-    deleteCarousel
-} = require('../controllers/carouselController');
+const { createCarousel, updateCarousel, getCarousel, deleteCarousel } = require('../controllers/carouselController');
 
 
 carouselRoutes.post('/carousel', upload.single('image'), createCarousel);

@@ -29,6 +29,14 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    shippingCharge: {
+        type: Number,
+        required: true
+    },
+    additionalShippingFee: {
+        type: Number,
+        default: 0 // Optional additional fee for heavy or large items
+    },
     status: {
         type: String,
         default: "pending"
@@ -55,7 +63,6 @@ const orderSchema = new mongoose.Schema({
                 return this.paymentMethod !== 'cash_on_delivery';
             }
         },
-        // MFS-specific fields
         mobileNumber: {
             type: String,
             required: function () {
@@ -69,7 +76,6 @@ const orderSchema = new mongoose.Schema({
                 return this.paymentMethod === 'MFS';
             }
         },
-        // Bank-specific fields
         accountNumber: {
             type: String,
             required: function () {

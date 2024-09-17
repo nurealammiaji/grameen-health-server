@@ -1,12 +1,19 @@
 const Product = require('../models/productModel');
+const Shop = require('../models/shopModel');
 const path = require("path");
 const fs = require('fs').promises;
 
-// Create product with multiple images
+// Create product with advance money option and multiple images
 const createProduct = async (req, res) => {
   try {
-    const { name, description, price, category, subCategory, variants } = req.body;
-    const images = req.files.map(file => file.path);
+    const { name, description, price, category, subCategory, variants, shop, advanceMoney } = req.body;
+    const images = req.files ? req.files.map(file => file.path) : [];
+
+    // Validate the shop
+    const shopExists = await Shop.findById(shop);
+    if (!shopExists) {
+      return res.status(404).json({ message: 'Shop not found' });
+    }
 
     const newProduct = new Product({
       name,
@@ -15,7 +22,9 @@ const createProduct = async (req, res) => {
       category,
       subCategory,
       variants,
-      images
+      images,
+      shop,
+      advanceMoney // Add advanceMoney field
     });
 
     await newProduct.save();
@@ -25,10 +34,10 @@ const createProduct = async (req, res) => {
   }
 };
 
-// Update product with multiple images
+// Update product with advance money option and multiple images
 const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { name, description, price, category, variants } = req.body;
+  const { name, description, price, category, variants, shop, advanceMoney } = req.body;
   const newImages = req.files ? req.files.map(file => file.path) : []; // Handle uploaded images
 
   try {
@@ -36,6 +45,14 @@ const updateProduct = async (req, res) => {
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // If a shop is provided, validate the shop
+    if (shop) {
+      const shopExists = await Shop.findById(shop);
+      if (!shopExists) {
+        return res.status(404).json({ message: 'Shop not found' });
+      }
     }
 
     // Determine images to delete (those not in the new images list)
@@ -53,7 +70,9 @@ const updateProduct = async (req, res) => {
       price: price || product.price,
       category: category || product.category,
       variants: variants || product.variants,
-      images: newImages.length > 0 ? newImages : product.images
+      images: newImages.length > 0 ? newImages : product.images,
+      shop: shop || product.shop, // Add shop update if provided
+      advanceMoney: advanceMoney !== undefined ? advanceMoney : product.advanceMoney // Add advanceMoney update if provided
     };
 
     // Update the product
@@ -74,7 +93,7 @@ const updateProduct = async (req, res) => {
 // Get all products
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().populate('shop'); // Populate shop details
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch products', error });
@@ -85,7 +104,7 @@ const getAllProducts = async (req, res) => {
 const getSingleProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findById(id);
+    const product = await Product.findById(id).populate('shop'); // Populate shop details
 
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
@@ -97,6 +116,7 @@ const getSingleProduct = async (req, res) => {
   }
 };
 
+// Delete product
 const deleteProduct = async (req, res) => {
   const { id } = req.params;
 
@@ -128,6 +148,5 @@ const deleteProduct = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete product', error });
   }
 };
-
 
 module.exports = { createProduct, getSingleProduct, getAllProducts, updateProduct, deleteProduct };

@@ -1,13 +1,13 @@
 const express = require('express');
-const productsRoutes = express.Router();
+const productRoutes = express.Router();
 const { createProduct, getSingleProduct, getAllProducts, updateProduct, deleteProduct } = require('../controllers/productController');
-const upload = require('../middlewares/uploadMiddleware'); // Multer middleware for file upload
+const upload = require('../middlewares/uploadMiddleware');
 
 // Routes
-productsRoutes.post('/products/create', upload.array('images', 5), createProduct);
-productsRoutes.put('/products/update/:id', upload.array('images', 5), updateProduct);
-productsRoutes.get('/products/get', getAllProducts);
-productsRoutes.get('/products/get/:id', getSingleProduct);
-productsRoutes.delete('/products/delete/:id', deleteProduct);
+productRoutes.post('/products/create', upload.array('images', 5), createProduct);
+productRoutes.put('/products/update/:id', upload.array('images', 5), updateProduct);
+productRoutes.get('/products/get', getAllProducts);
+productRoutes.get('/products/get/:id', getSingleProduct);
+productRoutes.delete('/products/delete/:id', deleteProduct);
 
-module.exports = productsRoutes;
+module.exports = productRoutes;

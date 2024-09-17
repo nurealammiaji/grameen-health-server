@@ -5,13 +5,11 @@ const productSchema = new mongoose.Schema({
         type: String,
         default: "product"
     },
-    name:
-    {
+    name: {
         type: String,
         required: true
     },
-    description:
-    {
+    description: {
         type: String,
         required: true
     },
@@ -54,18 +52,15 @@ const productSchema = new mongoose.Schema({
         type: String,
         default: null
     },
-    // importer: {
-    //     type: String,
-    //     default: null
-    // },
-    // distributor: {
-    //     type: String,
-    //     default: null
-    // },
-    // marketer: {
-    //     type: String,
-    //     default: "Grameen Health"
-    // },
+    shop: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Shop', // Refers to the Shop model
+        required: true
+    },
+    advanceMoney: {
+        type: Number,
+        default: 0
+    },
     status: {
         type: String,
         default: "pending",

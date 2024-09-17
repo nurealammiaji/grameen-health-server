@@ -22,6 +22,8 @@ const storage = multer.diskStorage({
             uploadPath = 'uploads/images/products';
         } else if (type === 'carousel') {
             uploadPath = 'uploads/images/carousels';
+        } else if (type === 'shop') {
+            uploadPath = 'uploads/images/shops';
         } else {
             return cb(new Error('Unknown upload type'));
         }
@@ -44,6 +46,8 @@ const storage = multer.diskStorage({
             filename = `prd-${uniqueId}${extName}`;
         } else if (type === 'carousel') {
             filename = `crs-${uniqueId}${extName}`;
+        } else if (type === 'shop') {
+            filename = `shp-${uniqueId}${extName}`;
         } else {
             return cb(new Error('Unknown upload type'));
         }
