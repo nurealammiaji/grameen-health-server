@@ -1,5 +1,5 @@
 const multer = require('multer');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 
 // for unique Id
@@ -9,48 +9,39 @@ let nanoid;
     nanoid = module.nanoid;
 })();
 
-// Multer storage configuration with dynamic paths based on type
+const typeMappings = {
+    user: 'usr',
+    product: 'prd',
+    carousel: 'crs',
+    shop: 'shp',
+};
+
+// Multer storage configuration
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
+    destination: async function (req, file, cb) {
         const type = req.body.type || req.query.type || 'unknown';
 
-        // Define the base path for user, product and carousel uploads
-        let uploadPath;
-        if (type === 'user') {
-            uploadPath = 'uploads/images/users';
-        } else if (type === 'product') {
-            uploadPath = 'uploads/images/products';
-        } else if (type === 'carousel') {
-            uploadPath = 'uploads/images/carousels';
-        } else if (type === 'shop') {
-            uploadPath = 'uploads/images/shops';
-        } else {
-            return cb(new Error('Unknown upload type'));
-        }
+        // Logging to debug type value
+        console.log('Upload type:', type);
 
-        // Ensure the directory exists
-        fs.mkdir(uploadPath, { recursive: true }, (err) => {
-            if (err) return cb(err);
+        const uploadPath = `uploads/images/${type}`;
+
+        try {
+            await fs.mkdir(uploadPath, { recursive: true });
             cb(null, uploadPath);
-        });
+        } catch (err) {
+            cb(err);
+        }
     },
     filename: function (req, file, cb) {
         const uniqueId = nanoid(8);
         const extName = path.extname(file.originalname);
-        const type = req.body.type;
+        const prefix = typeMappings[req.body.type] || 'unknown';
 
-        let filename;
-        if (type === 'user') {
-            filename = `usr-${uniqueId}${extName}`;
-        } else if (type === 'product') {
-            filename = `prd-${uniqueId}${extName}`;
-        } else if (type === 'carousel') {
-            filename = `crs-${uniqueId}${extName}`;
-        } else if (type === 'shop') {
-            filename = `shp-${uniqueId}${extName}`;
-        } else {
-            return cb(new Error('Unknown upload type'));
-        }
+        // Logging to debug filename prefix
+        console.log('Filename prefix:', prefix);
+
+        const filename = `${prefix}-${uniqueId}${extName}`;
 
         cb(null, filename);
     }

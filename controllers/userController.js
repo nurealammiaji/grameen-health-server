@@ -62,6 +62,7 @@ const getAllUsers = async (req, res) => {
 
 const getSingleUser = async (req, res) => {
     const { id } = req.params;
+    console.log(id);
 
     try {
         const user = await User.findById(id).select('-password');  // Exclude password

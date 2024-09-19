@@ -54,6 +54,8 @@ const login = async (req, res) => {
         console.log({ phone, password });
 
         const user = await User.findOne({ phone: phone });
+
+        console.log("User found");
         if (!user) {
             return res.status(404).send({ message: 'User not found!' });
         }
