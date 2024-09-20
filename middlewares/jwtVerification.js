@@ -6,12 +6,16 @@ const secret = process.env.JWT_SECRET;
 const verifyToken = async (req, res, next) => {
 
     const authorization = req.headers.authorization;
+    let token;
+
     if (!authorization) {
         await res.status(500).send({ message: 'Invalid authorization' });
     }
 
-    const token = authorization.split(" ")[1];
-    console.log(token);
+    if (authorization) {
+        token = authorization.split(" ")[1];
+        console.log(token);
+    }
 
     if (!token) {
         return await res.status(403).send({ message: 'No token provided!' });

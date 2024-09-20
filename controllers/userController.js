@@ -1,4 +1,5 @@
 const fs = require('fs').promises;
+const bcrypt = require('bcryptjs');
 const path = require('path');
 const User = require('../models/userModel');
 

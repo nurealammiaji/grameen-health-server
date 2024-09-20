@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
         // Logging to debug type value
         console.log('Upload type:', type);
 
-        const uploadPath = `uploads/images/${type}`;
+        const uploadPath = `uploads/images/${type}s`;
 
         try {
             await fs.mkdir(uploadPath, { recursive: true });
