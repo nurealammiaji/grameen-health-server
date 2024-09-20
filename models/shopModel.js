@@ -16,7 +16,6 @@ const shopSchema = new mongoose.Schema({
     },
     shopLogo: {
         type: String,
-        required: false
     },
     shopBanners: [{
         type: String

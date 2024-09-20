@@ -9,6 +9,8 @@ const createShop = async (req, res) => {
         const shopLogo = req.files['shopLogo'] ? req.files['shopLogo'][0].path : null;
         const shopBanners = req.files['shopBanners'] ? req.files['shopBanners'].map(file => file.path) : [];
 
+        console.log(name, description, ownerId, shopLogo, shopBanners);
+
         const shop = new Shop({
             name,
             description,
@@ -90,9 +92,12 @@ const getAllShops = async (req, res) => {
 const deleteShop = async (req, res) => {
     try {
         const { shopId } = req.params;
+        console.log(shopId);
 
         const shop = await Shop.findById(shopId);
         if (!shop) return res.status(404).json({ message: 'Shop not found' });
+
+        console.log("shop found", shop);
 
         // Delete logo and banners if they exist
         if (shop.shopLogo) {
@@ -105,7 +110,7 @@ const deleteShop = async (req, res) => {
             }));
         }
 
-        await shop.remove();
+        await Shop.findByIdAndDelete(shopId);
         res.status(200).json({ message: 'Shop deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Failed to delete shop', error: error.message });

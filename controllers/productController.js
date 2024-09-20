@@ -6,7 +6,7 @@ const fs = require('fs').promises;
 // Create product with advance money option and multiple images
 const createProduct = async (req, res) => {
   try {
-    const { name, description, price, category, subCategory, variants, shop, advanceMoney } = req.body;
+    const { name, description, price, specialPrice, category, subCategory, variants, shop, advanceMoney } = req.body;
     const images = req.files ? req.files.map(file => file.path) : [];
 
     // Validate the shop
@@ -19,12 +19,13 @@ const createProduct = async (req, res) => {
       name,
       description,
       price,
+      specialPrice,
       category,
       subCategory,
       variants,
       images,
       shop,
-      advanceMoney // Add advanceMoney field
+      advanceMoney
     });
 
     await newProduct.save();
@@ -37,8 +38,10 @@ const createProduct = async (req, res) => {
 // Update product with advance money option and multiple images
 const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { name, description, price, category, variants, shop, advanceMoney } = req.body;
+  const { name, description, price, specialPrice, category, subCategory, variants, shop, advanceMoney } = req.body;
   const newImages = req.files ? req.files.map(file => file.path) : []; // Handle uploaded images
+
+  console.log("Hitted", id, req.body);
 
   try {
     // Find the existing product
@@ -46,7 +49,8 @@ const updateProduct = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
-
+    
+    console.log("found", product);
     // If a shop is provided, validate the shop
     if (shop) {
       const shopExists = await Shop.findById(shop);
@@ -68,12 +72,16 @@ const updateProduct = async (req, res) => {
       name: name || product.name,
       description: description || product.description,
       price: price || product.price,
+      specialPrice: specialPrice || product.specialPrice,
       category: category || product.category,
+      subCategory: subCategory || product.subCategory,
       variants: variants || product.variants,
       images: newImages.length > 0 ? newImages : product.images,
-      shop: shop || product.shop, // Add shop update if provided
+      shop: shop || product.shop,
       advanceMoney: advanceMoney !== undefined ? advanceMoney : product.advanceMoney // Add advanceMoney update if provided
     };
+
+    console.log(updatedFields);
 
     // Update the product
     const updatedProduct = await Product.findByIdAndUpdate(id, updatedFields, { new: true });
