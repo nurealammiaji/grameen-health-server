@@ -1,5 +1,5 @@
 const multer = require('multer');
-const fs = require('fs').promises;
+const fs = require('fs/promises');
 const path = require('path');
 
 // for unique Id

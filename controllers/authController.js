@@ -6,11 +6,11 @@ const User = require('../models/userModel');
 const secret = process.env.JWT_SECRET;
 
 const register = async (req, res) => {
-    const { name, phone, password } = req.body;
-    const profileImage = req.file ? req.file.path : null;
-    console.log({ name, phone, password });  // Log incoming data
-
+    let profileImage;
     try {
+        const { name, phone, password } = req.body;
+        profileImage = req.file ? req.file.path : null;
+        console.log({ name, phone, password });  // Log incoming data
         // Check if user already exists
         let existingUser = await User.findOne({ phone });
         if (existingUser) {
@@ -42,6 +42,14 @@ const register = async (req, res) => {
 
         res.status(201).send({ message: 'User registered successfully', user: user, id: user._id, accessToken: token });
     } catch (error) {
+        if (profileImage) {
+            try {
+                await fs.unlink(profileImage);
+                console.error(`Deleted orphaned image successfully: ${err.message}`);
+            } catch (err) {
+                console.error(`Failed to delete orphaned image: ${err.message}`);
+            }
+        }
         console.error("Error during registration:", error);  // Log detailed error
         res.status(500).send({ error: 'User registration failed' });
     }

@@ -1,13 +1,14 @@
 const Product = require('../models/productModel');
 const Shop = require('../models/shopModel');
 const path = require("path");
-const fs = require('fs').promises;
+const fs = require('fs/promises');
 
 // Create product with advance money option and multiple images
 const createProduct = async (req, res) => {
+  let images;
   try {
     const { name, description, price, specialPrice, category, subCategory, variants, shop, advanceMoney } = req.body;
-    const images = req.files ? req.files.map(file => file.path) : [];
+    images = req.files ? req.files.map(file => file.path) : [];
 
     // Validate the shop
     const shopExists = await Shop.findById(shop);
@@ -31,25 +32,34 @@ const createProduct = async (req, res) => {
     await newProduct.save();
     res.status(201).json(newProduct);
   } catch (error) {
+    // If product creation fails, handle cleanup if an image was uploaded
+    if (images) {
+      try {
+        await fs.unlink(images);
+        console.error(`Deleted orphaned images successfully: ${err.message}`);
+      } catch (err) {
+        console.error(`Failed to delete orphaned images: ${err.message}`);
+      }
+    }
     res.status(500).json({ message: 'Failed to create product', error });
   }
 };
 
 // Update product with advance money option and multiple images
 const updateProduct = async (req, res) => {
-  const { id } = req.params;
-  const { name, description, price, specialPrice, category, subCategory, variants, shop, advanceMoney } = req.body;
-  const newImages = req.files ? req.files.map(file => file.path) : []; // Handle uploaded images
-
-  console.log("Hitted", id, req.body);
-
+  let newImages;
   try {
+    const { id } = req.params;
+    const { name, description, price, specialPrice, category, subCategory, variants, shop, advanceMoney } = req.body;
+    newImages = req.files ? req.files.map(file => file.path) : [];
+
+    console.log("Hitted", id, req.body);
     // Find the existing product
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
-    
+
     console.log("found", product);
     // If a shop is provided, validate the shop
     if (shop) {
@@ -93,6 +103,14 @@ const updateProduct = async (req, res) => {
     // Respond with the updated product
     res.status(200).json(updatedProduct);
   } catch (error) {
+    if (newImages) {
+      try {
+        await fs.unlink(newImages);
+        console.error(`Deleted orphaned images successfully: ${err.message}`);
+      } catch (err) {
+        console.error(`Failed to delete orphaned images: ${err.message}`);
+      }
+    }
     console.error("Error during product update:", error);
     res.status(500).json({ message: 'Failed to update product', error });
   }
@@ -107,6 +125,26 @@ const getAllProducts = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch products', error });
   }
 };
+
+// Get products for a specific shop
+const getShopProducts = async (req, res) => {
+  try {
+    const { shopId } = req.params; // Assuming the shop ID is passed in the URL parameters
+    const products = await Product.find({ shop: shopId }).populate('shop'); // Populate shop details
+
+    if (!products.length) {
+      return res.status(404).json({ message: 'No products found for this shop' });
+    }
+
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch products for this shop', error });
+  }
+};
+
+// Export the new function along with the others
+module.exports = { createProduct, getSingleProduct, getAllProducts, updateProduct, deleteProduct, getShopProducts };
+
 
 // Get single product by ID
 const getSingleProduct = async (req, res) => {
@@ -157,4 +195,4 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-module.exports = { createProduct, getSingleProduct, getAllProducts, updateProduct, deleteProduct };
+module.exports = { createProduct, getSingleProduct, getShopProducts, getAllProducts, updateProduct, deleteProduct };

@@ -101,6 +101,24 @@ const getSingleOrder = async (req, res) => {
     }
 };
 
+// Get all orders for a specific user
+const getUserOrders = async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        const userOrders = await Order.find({ userId }).populate('userId').populate('products.productId');
+
+        if (userOrders.length === 0) {
+            return res.status(404).json({ message: 'No orders found for this user' });
+        }
+
+        res.status(200).json(userOrders);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to retrieve user orders', error: error.message });
+    }
+};
+
+
 // Get all orders
 const getAllOrders = async (req, res) => {
     try {
@@ -129,4 +147,4 @@ const deleteOrder = async (req, res) => {
     }
 };
 
-module.exports = { createOrder, updateOrder, getSingleOrder, getAllOrders, deleteOrder };
+module.exports = { createOrder, updateOrder, getSingleOrder, getUserOrders, getAllOrders, deleteOrder };

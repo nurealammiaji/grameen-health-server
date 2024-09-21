@@ -1,14 +1,14 @@
-const fs = require('fs').promises;
+const fs = require('fs/promises');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const User = require('../models/userModel');
 
 const updateUser = async (req, res) => {
-    const { id } = req.params;
-    const { name, phone, password } = req.body;
-    const profileImage = req.file ? req.file.path : null;
-
+    let profileImage;
     try {
+        const { id } = req.params;
+        const { name, phone, password } = req.body;
+        profileImage = req.file ? req.file.path : null;
         // Find the existing user
         const user = await User.findById(id);
         if (!user) {
@@ -46,6 +46,14 @@ const updateUser = async (req, res) => {
 
         res.status(200).json({ message: 'User updated successfully', user: updatedUser });
     } catch (error) {
+        if (profileImage) {
+            try {
+                await fs.unlink(profileImage);
+                console.error(`Deleted orphaned image successfully: ${err.message}`);
+            } catch (err) {
+                console.error(`Failed to delete orphaned image: ${err.message}`);
+            }
+        }
         console.error("Error during user update:", error);
         res.status(500).json({ message: 'Failed to update user', error });
     }

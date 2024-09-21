@@ -1,13 +1,15 @@
 const Shop = require('../models/shopModel');
-const fs = require('fs').promises;
+const fs = require('fs/promises');
 
 // Create a new shop with single shopLogo and multiple shopBanners
 const createShop = async (req, res) => {
+    let shopLogo;
+    let shopBanners;
     try {
         const { name, description, ownerId } = req.body;
 
-        const shopLogo = req.files['shopLogo'] ? req.files['shopLogo'][0].path : null;
-        const shopBanners = req.files['shopBanners'] ? req.files['shopBanners'].map(file => file.path) : [];
+        shopLogo = req.files['shopLogo'] ? req.files['shopLogo'][0].path : null;
+        shopBanners = req.files['shopBanners'] ? req.files['shopBanners'].map(file => file.path) : [];
 
         console.log(name, description, ownerId, shopLogo, shopBanners);
 
@@ -22,12 +24,30 @@ const createShop = async (req, res) => {
         await shop.save();
         res.status(201).json(shop);
     } catch (error) {
+        if (shopLogo) {
+            try {
+                await fs.unlink(shopLogo);
+                console.error(`Deleted orphaned image successfully: ${err.message}`);
+            } catch (err) {
+                console.error(`Failed to delete orphaned image: ${err.message}`);
+            }
+        }
+        if (shopBanners) {
+            try {
+                await fs.unlink(shopBanners);
+                console.error(`Deleted orphaned images successfully: ${err.message}`);
+            } catch (err) {
+                console.error(`Failed to delete orphaned images: ${err.message}`);
+            }
+        }
         res.status(500).json({ message: 'Failed to create shop', error: error.message });
     }
 };
 
 // Update an existing shop (with single logo and multiple banners)
 const updateShop = async (req, res) => {
+    let newShopLogo;
+    let newShopBanners;
     try {
         const { shopId } = req.params;
         const { name, description } = req.body;
@@ -40,7 +60,8 @@ const updateShop = async (req, res) => {
             if (shop.shopLogo) {
                 await fs.unlink(shop.shopLogo).catch((err) => console.log('Failed to delete old logo', err));
             }
-            shop.shopLogo = req.files['shopLogo'][0].path;
+            newShopLogo = req.files['shopLogo'][0].path;
+            shop.shopLogo = newShopLogo;
         }
 
         // Handle new banners upload and delete the old ones if they exist
@@ -50,7 +71,8 @@ const updateShop = async (req, res) => {
                     await fs.unlink(banner).catch((err) => console.log('Failed to delete old banner', err));
                 }));
             }
-            shop.shopBanners = req.files['shopBanners'].map(file => file.path);
+            newShopBanners = req.files['shopBanners'].map(file => file.path);
+            shop.shopBanners = newShopBanners;
         }
 
         // Update name and description
@@ -60,6 +82,22 @@ const updateShop = async (req, res) => {
         await shop.save();
         res.status(200).json(shop);
     } catch (error) {
+        if (newShopLogo) {
+            try {
+                await fs.unlink(newShopLogo);
+                console.error(`Deleted orphaned image successfully: ${err.message}`);
+            } catch (err) {
+                console.error(`Failed to delete orphaned image: ${err.message}`);
+            }
+        }
+        if (newShopBanners) {
+            try {
+                await fs.unlink(newShopBanners);
+                console.error(`Deleted orphaned images successfully: ${err.message}`);
+            } catch (err) {
+                console.error(`Failed to delete orphaned images: ${err.message}`);
+            }
+        }
         res.status(500).json({ message: 'Failed to update shop', error: error.message });
     }
 };
@@ -75,6 +113,22 @@ const getSingleShop = async (req, res) => {
         res.status(200).json(shop);
     } catch (error) {
         res.status(500).json({ message: 'Failed to retrieve shop', error: error.message });
+    }
+};
+
+// Get all shops for a specific user
+const getMerchantShops = async (req, res) => {
+    try {
+        const { merchantId } = req.params;
+        const shops = await Shop.find({ ownerId: merchantId });
+
+        if (shops.length === 0) {
+            return res.status(404).json({ message: 'No shops found for this user' });
+        }
+
+        res.status(200).json(shops);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to retrieve shops for user', error: error.message });
     }
 };
 
@@ -117,4 +171,4 @@ const deleteShop = async (req, res) => {
     }
 };
 
-module.exports = { createShop, updateShop, getSingleShop, getAllShops, deleteShop };
+module.exports = { createShop, updateShop, getSingleShop, getMerchantShops, getAllShops, deleteShop };

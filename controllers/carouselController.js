@@ -1,12 +1,13 @@
 const Carousel = require('../models/carouselModel');
 const path = require('path');
-const fs = require('fs').promises;
+const fs = require('fs/promises');
 
 // Controller function to create a carousel item
 const createCarousel = async (req, res) => {
+    let image;
     try {
         const { title, description, destination, status } = req.body;
-        const image = req.file ? req.file.path : null;
+        image = req.file ? req.file.path : null;
 
         // Create a new carousel item
         const newCarousel = new Carousel({
@@ -20,17 +21,25 @@ const createCarousel = async (req, res) => {
         const savedCarousel = await newCarousel.save();
         res.status(201).json(savedCarousel);
     } catch (error) {
+        if (image) {
+            try {
+                await fs.unlink(image);
+                console.error(`Deleted orphaned image successfully: ${err.message}`);
+            } catch (err) {
+                console.error(`Failed to delete orphaned image: ${err.message}`);
+            }
+        }
         res.status(500).json({ error: error.message });
     }
 };
 
 // Controller function to update a carousel item
 const updateCarousel = async (req, res) => {
-    const { id } = req.params;
-    const { title, description, destination, status } = req.body;
-    const newImage = req.file ? req.file.path : null; // Get new image path if available
-
+    let newImage;
     try {
+        const { id } = req.params;
+        const { title, description, destination, status } = req.body;
+        newImage = req.file ? req.file.path : null; // Get new image path if available
         // Find the carousel item to update
         const carousel = await Carousel.findById(id);
         if (!carousel) {
@@ -63,6 +72,14 @@ const updateCarousel = async (req, res) => {
         // Send the updated carousel item
         res.status(200).json(updatedCarousel);
     } catch (error) {
+        if (newImage) {
+            try {
+                await fs.unlink(newImage);
+                console.error(`Deleted orphaned image successfully: ${err.message}`);
+            } catch (err) {
+                console.error(`Failed to delete orphaned image: ${err.message}`);
+            }
+        }
         console.error("Error updating carousel:", error);
         res.status(500).json({ message: 'Failed to update carousel', error });
     }
@@ -81,6 +98,16 @@ const getCarousel = async (req, res) => {
         res.json(carousel);
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+const getAllCarousels = async (req, res) => {
+    try {
+        const carousels = await Carousel.find();
+        res.status(200).json(carousels);
+    } catch (error) {
+        console.error("Error fetching carousels:", error);
+        res.status(500).json({ error: 'Failed to fetch carousel items', details: error.message });
     }
 };
 
@@ -114,5 +141,5 @@ const deleteCarousel = async (req, res) => {
     }
 };
 
-module.exports = { createCarousel, getCarousel, updateCarousel, deleteCarousel };
+module.exports = { createCarousel, getCarousel, getAllCarousels, updateCarousel, deleteCarousel };
 
