@@ -129,8 +129,8 @@ const getAllProducts = async (req, res) => {
 // Get products for a specific shop
 const getShopProducts = async (req, res) => {
   try {
-    const { shopId } = req.params; // Assuming the shop ID is passed in the URL parameters
-    const products = await Product.find({ shop: shopId }).populate('shop'); // Populate shop details
+    const { shopId } = req.params;
+    const products = await Product.find({ shop: shopId }).populate('shop');
 
     if (!products.length) {
       return res.status(404).json({ message: 'No products found for this shop' });
@@ -141,10 +141,6 @@ const getShopProducts = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch products for this shop', error });
   }
 };
-
-// Export the new function along with the others
-module.exports = { createProduct, getSingleProduct, getAllProducts, updateProduct, deleteProduct, getShopProducts };
-
 
 // Get single product by ID
 const getSingleProduct = async (req, res) => {
@@ -167,13 +163,11 @@ const deleteProduct = async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Find the product to delete
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    // Delete image files from the server
     if (product.images.length > 0) {
       const deletePromises = product.images.map(imagePath =>
         fs.unlink(imagePath).catch(err => {
@@ -185,7 +179,6 @@ const deleteProduct = async (req, res) => {
       console.log(`Deleted ${product.images.length} images successfully.`);
     }
 
-    // Delete product from the database
     await Product.findByIdAndDelete(id);
 
     res.status(200).json({ message: 'Product and associated images deleted successfully' });
