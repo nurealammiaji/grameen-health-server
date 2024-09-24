@@ -42,7 +42,9 @@ const createProduct = async (req, res) => {
     await newProduct.save();
     res.status(201).json(newProduct);
   } catch (error) {
-    await deleteFiles(images);
+    if (images) {
+      await deleteFiles(images);
+    }
     console.error('Failed to create product:', error);
     res.status(500).json({ message: 'Failed to create product', error: error.message });
   }
@@ -94,7 +96,9 @@ const updateProduct = async (req, res) => {
 
     res.status(200).json(updatedProduct);
   } catch (error) {
-    await deleteFiles(newImages);
+    if (newImages) {
+      await deleteFiles(newImages);
+    }
     console.error('Failed to update product:', error);
     res.status(500).json({ message: 'Failed to update product', error: error.message });
   }
