@@ -22,11 +22,13 @@ const productSchema = new mongoose.Schema({
         default: null
     },
     category: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
         required: true
     },
     subCategory: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'SubCategory',
         required: true
     },
     model: {
@@ -54,12 +56,16 @@ const productSchema = new mongoose.Schema({
     },
     shop: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Shop', // Refers to the Shop model
+        ref: 'Shop',
         required: true
     },
-    advanceMoney: {
+    needAdvance: {
         type: Number,
         default: 0
+    },
+    quantity: {
+        type: Number,
+        required: true
     },
     status: {
         type: String,

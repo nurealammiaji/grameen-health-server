@@ -17,7 +17,7 @@ const deleteFiles = async (files) => {
 const createProduct = async (req, res) => {
   let images = [];
   try {
-    const { name, description, price, specialPrice, category, subCategory, variants, shop, advanceMoney } = req.body;
+    const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, needAdvance } = req.body;
     images = req.files ? req.files.map(file => file.path) : [];
 
     // Validate the shop
@@ -36,7 +36,8 @@ const createProduct = async (req, res) => {
       variants,
       images,
       shop,
-      advanceMoney
+      quantity,
+      needAdvance
     });
 
     await newProduct.save();
@@ -55,7 +56,7 @@ const updateProduct = async (req, res) => {
   let newImages = [];
   try {
     const { id } = req.params;
-    const { name, description, price, specialPrice, category, subCategory, variants, shop, advanceMoney } = req.body;
+    const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, needAdvance } = req.body;
     newImages = req.files ? req.files.map(file => file.path) : [];
 
     const product = await Product.findById(id);
@@ -86,7 +87,8 @@ const updateProduct = async (req, res) => {
       variants: variants || product.variants,
       images: newImages.length > 0 ? newImages : product.images,
       shop: shop || product.shop,
-      advanceMoney: advanceMoney !== undefined ? advanceMoney : product.advanceMoney
+      quantity: quantity || product.quantity,
+      needAdvance: needAdvance !== undefined ? needAdvance : product.needAdvance
     };
 
     const updatedProduct = await Product.findByIdAndUpdate(id, updatedFields, { new: true });
