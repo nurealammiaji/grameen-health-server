@@ -35,7 +35,7 @@ const orderSchema = new mongoose.Schema({
     },
     additionalShippingFee: {
         type: Number,
-        default: 0 // Optional additional fee for heavy or large items
+        default: 0
     },
     status: {
         type: String,

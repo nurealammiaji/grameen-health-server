@@ -21,12 +21,13 @@ const categorySchema = new mongoose.Schema({
         trim: true,
     },
     image: {
-        type: String, // Path to the image file
+        type: String,
         required: true,
+        default: null,
     },
     status: {
         type: String,
-        default: "pending",
+        default: 'pending',
     },
 }, { timestamps: true });
 

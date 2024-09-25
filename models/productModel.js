@@ -70,7 +70,7 @@ const productSchema = new mongoose.Schema({
     status: {
         type: String,
         default: "pending",
-    }
+    },
 }, { timestamps: true });
 
 const Product = mongoose.model('Product', productSchema);

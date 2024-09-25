@@ -1,11 +1,10 @@
 const express = require('express');
 const { createCategory, updateCategory, getAllCategories, getSingleCategory, deleteCategory } = require('../controllers/categoryController');
-
+const upload = require('../middlewares/uploadMiddleware');
 const categoryRoutes = express.Router();
 
-// Route to create a new category
-categoryRoutes.post('/categories/create', createCategory);
-categoryRoutes.put('/categories/update/:id', updateCategory);
+categoryRoutes.post('/categories/create', upload.single('image'), createCategory);
+categoryRoutes.put('/categories/update/:id', upload.single('image'), updateCategory);
 categoryRoutes.get('/categories/read', getAllCategories);
 categoryRoutes.get('/categories/read/:id', getSingleCategory);
 categoryRoutes.delete('/categories/delete/:id', deleteCategory);

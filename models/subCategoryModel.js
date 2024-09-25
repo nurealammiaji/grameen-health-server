@@ -21,7 +21,7 @@ const subCategorySchema = new mongoose.Schema({
         trim: true,
     },
     image: {
-        type: String, // Path to the image file
+        type: String,
         required: true,
     },
     category: {

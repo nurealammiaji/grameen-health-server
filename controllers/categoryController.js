@@ -29,6 +29,8 @@ const createCategory = async (req, res) => {
             image,
         });
 
+        console.log({newCategory});
+
         const savedCategory = await newCategory.save();
         res.status(201).json(savedCategory);
     } catch (error) {
