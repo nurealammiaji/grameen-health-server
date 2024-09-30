@@ -55,9 +55,10 @@ const productSchema = new mongoose.Schema({
         default: null
     },
     shop: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Shop',
-        required: true
+        // type: mongoose.Schema.Types.ObjectId,
+        // ref: 'Shop',
+        // required: true
+        type: String,
     },
     needAdvance: {
         type: Number,
