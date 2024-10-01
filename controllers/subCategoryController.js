@@ -18,7 +18,7 @@ const deleteImage = async (imagePath) => {
 const createSubCategory = async (req, res) => {
     let image;
     try {
-        const { title, description, category, status } = req.body;
+        const { title, description, subCategoryURL, category, status } = req.body;
         image = req.file ? req.file.path : null;
 
         // Validate the category
@@ -51,7 +51,7 @@ const updateSubCategory = async (req, res) => {
     let newImage;
     try {
         const { id } = req.params;
-        const { title, description, category, status } = req.body;
+        const { title, description, subCategoryURL, category, status } = req.body;
         newImage = req.file ? req.file.path : null;
 
         const subCategory = await SubCategory.findById(id);

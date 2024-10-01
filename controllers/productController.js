@@ -17,38 +17,38 @@ const deleteFiles = async (files) => {
 const createProduct = async (req, res) => {
   let images = [];
   try {
-    const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, needAdvance, originCountry, manufacturer, model, brand } = req.body;
+    const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, advanceMoney, originCountry, manufacturer, model, brand } = req.body;
     images = req.files ? req.files.map(file => file.path) : [];
 
     console.log('Request Body:', req.body);
     console.log('Files:', req.files);
 
     // Validate the shop
-    // const shopExists = await Shop.findById(shop);
-    // if (!shopExists) {
-    //   return res.status(404).json({ message: 'Shop not found' });
-    // }
+    const shopExists = await Shop.findById(shop);
+    if (!shopExists) {
+      return res.status(404).json({ message: 'Shop not found' });
+    }
 
-    // const newProduct = new Product({
-    //   name,
-    //   description,
-    //   price,
-    //   specialPrice,
-    //   category,
-    //   subCategory,
-    //   variants,
-    //   images,
-    //   shop,
-    //   quantity,
-    //   needAdvance,
-    //   originCountry,
-    //   manufacturer,
-    //   model,
-    //   brand
-    // });
+    const newProduct = new Product({
+      name,
+      description,
+      price,
+      specialPrice,
+      category,
+      subCategory,
+      variants,
+      images,
+      shop,
+      quantity,
+      advanceMoney,
+      originCountry,
+      manufacturer,
+      model,
+      brand
+    });
 
-    // await newProduct.save();
-    // res.status(201).json(newProduct);
+    await newProduct.save();
+    res.status(201).json(newProduct);
   } catch (error) {
     if (images) {
       await deleteFiles(images);
@@ -63,7 +63,7 @@ const updateProduct = async (req, res) => {
   let newImages = [];
   try {
     const { id } = req.params;
-    const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, needAdvance, originCountry, manufacturer, model, brand } = req.body;
+    const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, advanceMoney, originCountry, manufacturer, model, brand } = req.body;
     newImages = req.files ? req.files.map(file => file.path) : [];
 
     const product = await Product.findById(id);
@@ -95,7 +95,7 @@ const updateProduct = async (req, res) => {
       images: newImages.length > 0 ? newImages : product.images,
       shop: shop || product.shop,
       quantity: quantity || product.quantity,
-      needAdvance: needAdvance !== undefined ? needAdvance : product.needAdvance,
+      advanceMoney: advanceMoney !== undefined ? advanceMoney : product.advanceMoney,
       originCountry: originCountry || product.originCountry,
       manufacturer: manufacturer || product.manufacturer,
       model: model || product.model,

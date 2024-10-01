@@ -4,9 +4,9 @@ const { createProduct, getSingleProduct, getAllProducts, updateProduct, deletePr
 const upload = require('../middlewares/uploadMiddleware');
 
 // Routes
-productRoutes.post('/products/create', createProduct);
-// productRoutes.post('/products/create', upload.array('images', 5), createProduct);
-productRoutes.put('/products/update/:id', upload.array('images', 5), updateProduct);
+// productRoutes.post('/products/create', createProduct);
+productRoutes.post('/products/create', upload.array('images[]', 5), createProduct);
+productRoutes.put('/products/update/:id', upload.array('images[]', 5), updateProduct);
 productRoutes.get('/products/read', getAllProducts);
 productRoutes.get('/products/read/shops/:shopId', getShopProducts);
 productRoutes.get('/products/read/categories/:category', getCategoryProducts);

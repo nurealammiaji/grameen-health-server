@@ -8,16 +8,11 @@ const categorySchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
-        trim: true,
+        unique: true,
+        trim: true
     },
     description: {
         type: String,
-        trim: true,
-    },
-    categoryURL: {
-        type: String,
-        required: true,
-        unique: true,
         trim: true,
     },
     image: {

@@ -55,12 +55,11 @@ const productSchema = new mongoose.Schema({
         default: null
     },
     shop: {
-        // type: mongoose.Schema.Types.ObjectId,
-        // ref: 'Shop',
-        // required: true
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Shop',
+        required: true
     },
-    needAdvance: {
+    advanceMoney: {
         type: Number,
         default: 0
     },
