@@ -5,7 +5,7 @@ const subCategorySchema = new mongoose.Schema({
         type: String,
         default: "subCategory"
     },
-    title: {
+    name: {
         type: String,
         required: true,
         unique: true,

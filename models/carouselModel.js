@@ -5,7 +5,7 @@ const carouselSchema = new mongoose.Schema({
         type: String,
         default: "carousel"
     },
-    title: {
+    name: {
         type: String,
         required: true
     },

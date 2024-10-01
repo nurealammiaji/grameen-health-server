@@ -17,12 +17,12 @@ const deleteImage = async (imagePath) => {
 const createCarousel = async (req, res) => {
     let image;
     try {
-        const { title, description, destination, status } = req.body;
+        const { name, description, destination, status } = req.body;
         image = req.file ? req.file.path : null;
 
         // Create a new carousel item
         const newCarousel = new Carousel({
-            title,
+            name,
             image,
             description,
             destination,
@@ -42,7 +42,7 @@ const updateCarousel = async (req, res) => {
     let newImage;
     try {
         const { id } = req.params;
-        const { title, description, destination, status } = req.body;
+        const { name, description, destination, status } = req.body;
         newImage = req.file ? req.file.path : null;
 
         // Find the carousel item to update
@@ -58,7 +58,7 @@ const updateCarousel = async (req, res) => {
 
         // Update carousel item with provided fields
         const updatedCarousel = await Carousel.findByIdAndUpdate(id, {
-            title: title || carousel.title,
+            name: name || carousel.name,
             description: description || carousel.description,
             destination: destination || carousel.destination,
             status: status || carousel.status,

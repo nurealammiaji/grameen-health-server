@@ -17,12 +17,12 @@ const deleteImage = async (imagePath) => {
 const createCategory = async (req, res) => {
     let image;
     try {
-        const { type, title, description, status } = req.body;
+        const { type, name, description, status } = req.body;
         image = req.file ? req.file.path : null;
 
         const newCategory = new Category({
             type,
-            title,
+            name,
             description,
             status,
             image,
@@ -48,7 +48,7 @@ const updateCategory = async (req, res) => {
     let newImage;
 
     try {
-        const { type, title, description, status } = req.body;
+        const { type, name, description, status } = req.body;
         const category = await Category.findById(id);
         if (!category) {
             return res.status(404).json({ message: 'Category not found' });
@@ -61,7 +61,7 @@ const updateCategory = async (req, res) => {
             id,
             {
                 type: type || category.type,
-                title: title || category.title,
+                name: name || category.name,
                 description: description || category.description,
                 status: status !== undefined ? status : category.status,
                 image: newImage || category.image,

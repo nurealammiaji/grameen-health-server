@@ -7,7 +7,6 @@ const User = require('../models/userModel'); // Import the User model
 // Search controller for products, categories, subcategories, shops, and users
 const searchItems = async (req, res) => {
     const { query } = req.query;
-    console.log("hitted", query);
 
     if (!query) {
         return res.status(400).json({ message: 'Search query is required' });
@@ -15,8 +14,8 @@ const searchItems = async (req, res) => {
 
     try {
         const products = await Product.find({ name: { $regex: query, $options: 'i' } });
-        const categories = await Category.find({ title: { $regex: query, $options: 'i' } });
-        const subCategories = await SubCategory.find({ title: { $regex: query, $options: 'i' } });
+        const categories = await Category.find({ name: { $regex: query, $options: 'i' } });
+        const subCategories = await SubCategory.find({ name: { $regex: query, $options: 'i' } });
         const shops = await Shop.find({ name: { $regex: query, $options: 'i' } });
         const users = await User.find({ name: { $regex: query, $options: 'i' } });
 
