@@ -8,6 +8,6 @@ subCategoryRoutes.put('/subCategories/update/:id', upload.single('image'), updat
 subCategoryRoutes.get('/subCategories/read', getAllSubCategories);
 subCategoryRoutes.get('/subCategories/read/:id', getSingleSubCategory);
 subCategoryRoutes.get('/subCategories/read/categories/:categoryId', getSubCategoriesByCategory);
-subCategoryRoutes.delete('/subCategory/delete/:id', deleteSubCategory);
+subCategoryRoutes.delete('/subCategories/delete/:id', deleteSubCategory);
 
 module.exports = subCategoryRoutes;
