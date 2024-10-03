@@ -1,5 +1,5 @@
 const express = require("express");
-const mainRoutes = express.Router();
+const allRoutes = express.Router();
 const authRoutes = require("./authRoutes");
 const userRoutes = require("./userRoutes");
 const productRoutes = require("./productRoutes");
@@ -9,17 +9,19 @@ const shopRoutes = require("./shopRoutes");
 const carouselRoutes = require("./carouselRoutes");
 const categoryRoutes = require("./categoryRoutes");
 const subCategoryRoutes = require("./subCategoryRoutes");
+const reviewRoutes = require("./reviewRoutes");
 const searchRoutes = require("./searchRoutes");
 
-mainRoutes.use(authRoutes);
-mainRoutes.use(userRoutes);
-mainRoutes.use(productRoutes);
-mainRoutes.use(cartRoutes);
-mainRoutes.use(orderRoutes);
-mainRoutes.use(shopRoutes);
-mainRoutes.use(carouselRoutes);
-mainRoutes.use(categoryRoutes);
-mainRoutes.use(subCategoryRoutes);
-mainRoutes.use(searchRoutes);
+allRoutes.use(authRoutes);
+allRoutes.use(userRoutes);
+allRoutes.use(productRoutes);
+allRoutes.use(cartRoutes);
+allRoutes.use(orderRoutes);
+allRoutes.use(shopRoutes);
+allRoutes.use(carouselRoutes);
+allRoutes.use(categoryRoutes);
+allRoutes.use(subCategoryRoutes);
+allRoutes.use(reviewRoutes);
+allRoutes.use(searchRoutes);
 
-module.exports = mainRoutes;
+module.exports = allRoutes;

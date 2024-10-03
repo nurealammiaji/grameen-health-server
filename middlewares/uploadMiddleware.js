@@ -15,7 +15,8 @@ const typeMappings = {
     carousel: 'crs',
     shop: 'shp',
     category: 'ctg',
-    subCategory: 'sbCtg'
+    subCategory: 'sbCtg',
+    review: 'rvw'
 };
 
 // Multer storage configuration

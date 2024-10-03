@@ -41,9 +41,9 @@ const productSchema = new mongoose.Schema({
         type: Array,
         default: null
     },
-    images: {
-        type: Array,
-    },
+    images: [{
+        type: String,
+    }],
     brand: {
         type: String,
         default: null
