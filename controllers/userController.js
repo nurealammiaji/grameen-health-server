@@ -59,16 +59,6 @@ const updateUser = async (req, res) => {
     }
 };
 
-const getAllUsers = async (req, res) => {
-    try {
-        const users = await User.find().select('-password');  // Exclude password
-        res.status(200).json(users);
-    } catch (error) {
-        console.error("Error fetching users:", error);
-        res.status(500).json({ message: 'Failed to fetch users', error });
-    }
-};
-
 const getSingleUser = async (req, res) => {
     const { id } = req.params;
     console.log(id);
@@ -83,6 +73,46 @@ const getSingleUser = async (req, res) => {
     } catch (error) {
         console.error("Error fetching user:", error);
         res.status(500).json({ message: 'Failed to fetch user', error });
+    }
+};
+
+const getAllMerchants = async (req, res) => {
+    try {
+        const merchants = await User.find({ role: 'merchant' }).select('-password');  // Exclude password
+        res.status(200).json(merchants);
+    } catch (error) {
+        console.error("Error fetching merchants:", error);
+        res.status(500).json({ message: 'Failed to fetch merchants', error });
+    }
+};
+
+const getAllCustomers = async (req, res) => {
+    try {
+        const customers = await User.find({ role: 'customer' }).select('-password');  // Exclude password
+        res.status(200).json(customers);
+    } catch (error) {
+        console.error("Error fetching customers:", error);
+        res.status(500).json({ message: 'Failed to fetch customers', error });
+    }
+};
+
+const getAllAdmins = async (req, res) => {
+    try {
+        const admins = await User.find({ role: 'admin' }).select('-password');  // Exclude password
+        res.status(200).json(admins);
+    } catch (error) {
+        console.error("Error fetching admins:", error);
+        res.status(500).json({ message: 'Failed to fetch admins', error });
+    }
+};
+
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find().select('-password');  // Exclude password
+        res.status(200).json(users);
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({ message: 'Failed to fetch users', error });
     }
 };
 
@@ -116,4 +146,4 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { updateUser, getAllUsers, getSingleUser, deleteUser };
+module.exports = { updateUser, getAllUsers, getSingleUser, getAllCustomers, getAllMerchants, getAllAdmins, deleteUser };
