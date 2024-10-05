@@ -16,7 +16,7 @@ const deleteFiles = async (files) => {
 const createShop = async (req, res) => {
     const { name, description, ownerId } = req.body;
     const shopLogo = req.files['shopLogo'] ? req.files['shopLogo'][0].path : null;
-    const shopBanners = req.files['shopBanners'] ? req.files['shopBanners'].map(file => file.path) : [];
+    const shopBanners = req.files['shopBanners[]'] ? req.files['shopBanners[]'].map(file => file.path) : [];
 
     try {
         const shop = new Shop({ name, description, ownerId, shopLogo, shopBanners });

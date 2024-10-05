@@ -4,14 +4,14 @@ const { searchAll, searchUsers, searchAdmins, searchMerchants, searchCustomers, 
 const searchRoutes = express.Router();
 
 searchRoutes.get('/searches/read', searchAll);
-searchRoutes.get('/searches/read/users', searchUsers);
-searchRoutes.get('/searches/read/admins', searchAdmins);
-searchRoutes.get('/searches/read/merchants', searchMerchants);
-searchRoutes.get('/searches/read/customers', searchCustomers);
-searchRoutes.get('/searches/read/shops', searchShops);
-searchRoutes.get('/searches/read/products', searchProducts);
-searchRoutes.get('/searches/read/categories', searchCategories);
-searchRoutes.get('/searches/read/subCategories', searchSubCategories);
-searchRoutes.get('/searches/read/histories/:userId', getSearchHistory);
+searchRoutes.get('/searches/users/read', searchUsers);
+searchRoutes.get('/searches/admins/read', searchAdmins);
+searchRoutes.get('/searches/merchants/read', searchMerchants);
+searchRoutes.get('/searches/customers/read', searchCustomers);
+searchRoutes.get('/searches/shops/read', searchShops);
+searchRoutes.get('/searches/products/read', searchProducts);
+searchRoutes.get('/searches/categories/read', searchCategories);
+searchRoutes.get('/searches/subCategories/read', searchSubCategories);
+searchRoutes.get('/searches/histories/read/:userId', getSearchHistory);
 
 module.exports = searchRoutes;

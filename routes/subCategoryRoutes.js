@@ -7,7 +7,7 @@ subCategoryRoutes.post('/subCategories/create', upload.single('image'), createSu
 subCategoryRoutes.put('/subCategories/update/:id', upload.single('image'), updateSubCategory);
 subCategoryRoutes.get('/subCategories/read', getAllSubCategories);
 subCategoryRoutes.get('/subCategories/read/:id', getSingleSubCategory);
-subCategoryRoutes.get('/subCategories/read/categories/:categoryId', getSubCategoriesByCategory);
+subCategoryRoutes.get('/subCategories/categories/read/:categoryId', getSubCategoriesByCategory);
 subCategoryRoutes.delete('/subCategories/delete/:id', deleteSubCategory);
 
 module.exports = subCategoryRoutes;

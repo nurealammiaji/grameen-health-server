@@ -8,10 +8,10 @@ const upload = require('../middlewares/uploadMiddleware');
 productRoutes.post('/products/create', upload.array('images[]', 5), createProduct);
 productRoutes.put('/products/update/:id', upload.array('images[]', 5), updateProduct);
 productRoutes.get('/products/read', getAllProducts);
-productRoutes.get('/products/read/shops/:shopId', getShopProducts);
-productRoutes.get('/products/read/categories/:category', getCategoryProducts);
-productRoutes.get('/products/read/subCategories/:subCategory', getSubCategoryProducts);
 productRoutes.get('/products/read/:id', getSingleProduct);
+productRoutes.get('/products/shops/read/:shopId', getShopProducts);
+productRoutes.get('/products/categories/read/:category', getCategoryProducts);
+productRoutes.get('/products/subCategories/read/:subCategory', getSubCategoryProducts);
 productRoutes.delete('/products/delete/:id', deleteProduct);
 
 module.exports = productRoutes;
