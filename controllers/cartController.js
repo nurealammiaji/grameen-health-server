@@ -18,6 +18,7 @@ const createCart = async (req, res) => {
                 totalPrice += item.quantity * product.price;
                 return {
                     productId: item.productId,
+                    shopId: product.shop,
                     quantity: item.quantity,
                     price: product.price
                 };
@@ -44,7 +45,8 @@ const createCart = async (req, res) => {
 // Update an existing cart (add/remove/update products)
 const updateCart = async (req, res) => {
     try {
-        const { userId, products } = req.body;
+        const { userId } = req.params;
+        const { products } = req.body;
 
         // Find existing cart
         let cart = await Cart.findOne({ userId });
@@ -64,6 +66,7 @@ const updateCart = async (req, res) => {
                 totalPrice += item.quantity * product.price;
                 return {
                     productId: item.productId,
+                    shopId: product.shop,
                     quantity: item.quantity,
                     price: product.price
                 };
