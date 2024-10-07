@@ -14,12 +14,12 @@ const deleteFiles = async (files) => {
 
 // Create a new shop
 const createShop = async (req, res) => {
-    const { name, description, merchant } = req.body;
+    const { name, address, description, merchant } = req.body;
     const shopLogo = req.files['shopLogo'] ? req.files['shopLogo'][0].path : null;
     const shopBanners = req.files['shopBanners[]'] ? req.files['shopBanners[]'].map(file => file.path) : [];
 
     try {
-        const shop = new Shop({ name, description, merchant, shopLogo, shopBanners });
+        const shop = new Shop({ name, address, description, merchant, shopLogo, shopBanners });
         await shop.save();
         res.status(201).json(shop);
     } catch (error) {
@@ -32,7 +32,7 @@ const createShop = async (req, res) => {
 // Update an existing shop
 const updateShop = async (req, res) => {
     const { shopId } = req.params;
-    const { name, description } = req.body;
+    const { name, address, description, merchant } = req.body;
     const shop = await Shop.findById(shopId);
 
     if (!shop) return res.status(404).json({ message: 'Shop not found' });
@@ -52,7 +52,9 @@ const updateShop = async (req, res) => {
 
         // Update name and description
         shop.name = name || shop.name;
+        shop.address = address || shop.address;
         shop.description = description || shop.description;
+        shop.merchant = merchant || shop.merchant;
 
         await shop.save();
         res.status(200).json(shop);
