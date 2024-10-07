@@ -7,7 +7,9 @@ const carouselSchema = new mongoose.Schema({
     },
     name: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
+        trim: true,
     },
     image: {
         type: String,
@@ -19,7 +21,8 @@ const carouselSchema = new mongoose.Schema({
     },
     destination: {
         type: String,
-        default: "/"
+        default: "/",
+        trim: true,
     },
     status: {
         type: String,
