@@ -20,7 +20,7 @@ const shopSchema = new mongoose.Schema({
     shopBanners: [{
         type: String
     }],
-    ownerId: {
+    merchant: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true

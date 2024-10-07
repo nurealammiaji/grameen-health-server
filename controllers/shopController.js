@@ -14,12 +14,12 @@ const deleteFiles = async (files) => {
 
 // Create a new shop
 const createShop = async (req, res) => {
-    const { name, description, ownerId } = req.body;
+    const { name, description, merchant } = req.body;
     const shopLogo = req.files['shopLogo'] ? req.files['shopLogo'][0].path : null;
     const shopBanners = req.files['shopBanners[]'] ? req.files['shopBanners[]'].map(file => file.path) : [];
 
     try {
-        const shop = new Shop({ name, description, ownerId, shopLogo, shopBanners });
+        const shop = new Shop({ name, description, merchant, shopLogo, shopBanners });
         await shop.save();
         res.status(201).json(shop);
     } catch (error) {
@@ -67,7 +67,10 @@ const updateShop = async (req, res) => {
 const getSingleShop = async (req, res) => {
     try {
         const { shopId } = req.params;
-        const shop = await Shop.findById(shopId);
+        const shop = await Shop.findById(shopId).populate({
+            path: 'merchant',
+            select: '-password -address -role -status',
+        });
         if (!shop) return res.status(404).json({ message: 'Shop not found' });
         res.status(200).json(shop);
     } catch (error) {
@@ -79,7 +82,10 @@ const getSingleShop = async (req, res) => {
 const getMerchantShops = async (req, res) => {
     try {
         const { merchantId } = req.params;
-        const shops = await Shop.find({ ownerId: merchantId });
+        const shops = await Shop.find({ merchant: merchantId }).populate({
+            path: 'merchant',
+            select: '-password -address -role -status',
+        });
         if (shops.length === 0) return res.status(404).json({ message: 'No shops found for this user' });
         res.status(200).json(shops);
     } catch (error) {
@@ -90,7 +96,10 @@ const getMerchantShops = async (req, res) => {
 // Get all shops
 const getAllShops = async (req, res) => {
     try {
-        const shops = await Shop.find();
+        const shops = await Shop.find().populate({
+            path: 'merchant',
+            select: '-password -address -role -status',
+        });
         res.status(200).json(shops);
     } catch (error) {
         res.status(500).json({ message: 'Failed to retrieve shops', error: error.message });
