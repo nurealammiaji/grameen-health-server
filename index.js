@@ -6,6 +6,7 @@ const cors = require("cors");
 const app = express();
 const corsOptions = require("./configs/corsOption");
 const allRoutes = require("./routes/allRoutes");
+const path = require('path');
 
 // Middlewares
 app.use(express.json());
@@ -14,6 +15,9 @@ app.use(cors(corsOptions));
 
 // Routes
 app.use("/api/v1", allRoutes);
+
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const port = process.env.PORT || 5000;
 const server = http.createServer(app);
