@@ -20,14 +20,15 @@ const shopSchema = new mongoose.Schema({
     },
     shopLogo: {
         type: String,
+        required: true
     },
     shopBanners: [{
-        type: String
+        type: String,
+        required: true
     }],
     merchant: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
     },
     status: {
         type: String,
