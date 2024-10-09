@@ -126,5 +126,38 @@ const deleteShop = async (req, res) => {
     }
 };
 
-module.exports = { createShop, updateShop, getSingleShop, getMerchantShops, getAllShops, deleteShop };
+// Delete multiple shops
+const deleteShops = async (req, res) => {
+    const { shopIds } = req.body;
+    console.log(req.body);
+
+    if (!Array.isArray(shopIds) || shopIds.length === 0) {
+        return res.status(400).json({ message: 'Invalid shop IDs' });
+    }
+
+    try {
+        // Fetch shops to get logos and banners
+        const shops = await Shop.find({ _id: { $in: shopIds } });
+
+        if (shops.length === 0) {
+            return res.status(404).json({ message: 'No shops found for the provided IDs' });
+        }
+
+        // Collect logo and banner file paths for deletion
+        const filesToDelete = shops.flatMap(shop => [shop.shopLogo, ...shop.shopBanners]);
+
+        // Delete the files
+        await deleteFiles(filesToDelete);
+
+        // Delete shops
+        await Shop.deleteMany({ _id: { $in: shopIds } });
+
+        res.status(200).json({ message: 'Shops deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to delete shops', error: error.message });
+    }
+};
+
+
+module.exports = { createShop, updateShop, getSingleShop, getMerchantShops, getAllShops, deleteShop, deleteShops };
 
