@@ -45,9 +45,9 @@ const updateShop = async (req, res) => {
         }
 
         // Handle banners update
-        if (req.files['shopBanners']) {
+        if (req.files['shopBanners[]']) {
             await deleteFiles(shop.shopBanners);
-            shop.shopBanners = req.files['shopBanners'].map(file => file.path);
+            shop.shopBanners = req.files['shopBanners[]'].map(file => file.path);
         }
 
         // Update name and description
