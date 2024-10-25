@@ -100,7 +100,7 @@ const getAllShops = async (req, res) => {
     try {
         const shops = await Shop.find().populate({
             path: 'merchant',
-            select: '-password -address -role -status',
+            select: '-password -role -status',
         });
         res.status(200).json(shops);
     } catch (error) {
