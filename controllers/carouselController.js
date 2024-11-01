@@ -128,4 +128,35 @@ const deleteCarousel = async (req, res) => {
     }
 };
 
-module.exports = { createCarousel, getCarousel, getAllCarousels, updateCarousel, deleteCarousel };
+// Delete multiple carousels
+const deleteCarousels = async (req, res) => {
+    const { carouselIds } = req.body;
+
+    if (!Array.isArray(carouselIds) || carouselIds.length === 0) {
+        return res.status(400).json({ error: 'No IDs provided or invalid format' });
+    }
+
+    try {
+        // Find all carousel items by the provided IDs
+        const carousels = await Carousel.find({ _id: { $in: carouselIds } });
+
+        if (carousels.length === 0) {
+            return res.status(404).json({ error: 'No carousel items found for the provided IDs' });
+        }
+
+        // Remove image files from the server
+        const deleteImagePromises = carousels.map(carousel => deleteImage(carousel.image));
+        await Promise.all(deleteImagePromises);
+
+        // Delete the carousel items from the database
+        await Carousel.deleteMany({ _id: { $in: carouselIds } });
+
+        res.status(200).json({ message: 'Carousel items deleted successfully' });
+    } catch (error) {
+        console.error("Error during carousel deletion:", error);
+        res.status(500).json({ error: 'Failed to delete carousel items', details: error.message });
+    }
+};
+
+
+module.exports = { createCarousel, getCarousel, getAllCarousels, updateCarousel, deleteCarousel, deleteCarousels };
