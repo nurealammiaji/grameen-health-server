@@ -166,7 +166,34 @@ const deleteSubCategory = async (req, res) => {
     }
 };
 
-module.exports = {
-    createSubCategory, updateSubCategory, getAllSubCategories,
-    getSubCategoriesByCategory, getSingleSubCategory, deleteSubCategory
+// Delete multiple carousels
+const deleteSubCategories = async (req, res) => {
+    const { subCategoryIds } = req.body;
+
+    if (!Array.isArray(subCategoryIds) || subCategoryIds.length === 0) {
+        return res.status(400).json({ error: 'No IDs provided or invalid format' });
+    }
+
+    try {
+        // Find all carousel items by the provided IDs
+        const subCategories = await SubCategory.find({ _id: { $in: subCategoryIds } });
+
+        if (subCategories.length === 0) {
+            return res.status(404).json({ error: 'No Sub Categories items found for the provided IDs' });
+        }
+
+        // Remove image files from the server
+        const deleteImagePromises = subCategories.map(subCategory => deleteImage(subCategory.image));
+        await Promise.all(deleteImagePromises);
+
+        // Delete the carousel items from the database
+        await SubCategory.deleteMany({ _id: { $in: subCategoryIds } });
+
+        res.status(200).json({ message: 'Sub Category items deleted successfully' });
+    } catch (error) {
+        console.error("Error during sub category deletion:", error);
+        res.status(500).json({ error: 'Failed to delete carousel items', details: error.message });
+    }
 };
+
+module.exports = { createSubCategory, updateSubCategory, getAllSubCategories, getSubCategoriesByCategory, getSingleSubCategory, deleteSubCategory, deleteSubCategories };
