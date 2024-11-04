@@ -28,7 +28,7 @@ const createCategory = async (req, res) => {
             image,
         });
 
-        console.log({newCategory});
+        console.log({ newCategory });
 
         const savedCategory = await newCategory.save();
         res.status(201).json(savedCategory);
@@ -140,4 +140,34 @@ const deleteCategory = async (req, res) => {
     }
 };
 
-module.exports = { createCategory, updateCategory, getAllCategories, getSingleCategory, deleteCategory };
+// Delete multiple categories
+const deleteCategories = async (req, res) => {
+    const { categoryIds } = req.body;
+
+    if (!Array.isArray(categoryIds) || categoryIds.length === 0) {
+        return res.status(400).json({ error: 'No IDs provided or invalid format' });
+    }
+
+    try {
+        // Find all carousel items by the provided IDs
+        const categories = await Category.find({ _id: { $in: categoryIds } });
+
+        if (categories.length === 0) {
+            return res.status(404).json({ error: 'No Categories items found for the provided IDs' });
+        }
+
+        // Remove image files from the server
+        const deleteImagePromises = categories.map(category => deleteImage(category.image));
+        await Promise.all(deleteImagePromises);
+
+        // Delete the carousel items from the database
+        await Category.deleteMany({ _id: { $in: categoryIds } });
+
+        res.status(200).json({ message: 'Category items deleted successfully' });
+    } catch (error) {
+        console.error("Error during category deletion:", error);
+        res.status(500).json({ error: 'Failed to delete carousel items', details: error.message });
+    }
+};
+
+module.exports = { createCategory, updateCategory, getAllCategories, getSingleCategory, deleteCategory, deleteCategories };

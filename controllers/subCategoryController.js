@@ -166,7 +166,7 @@ const deleteSubCategory = async (req, res) => {
     }
 };
 
-// Delete multiple carousels
+// Delete multiple sub categories
 const deleteSubCategories = async (req, res) => {
     const { subCategoryIds } = req.body;
 
