@@ -1,5 +1,4 @@
 const Product = require('../models/productModel');
-const Shop = require('../models/shopModel');
 const fs = require('fs/promises');
 
 // Helper function to delete files
@@ -24,7 +23,7 @@ const createProduct = async (req, res) => {
     console.log('Files:', req.files);
 
     // Validate the shop
-    const shopExists = await Shop.findById(shop);
+    const shopExists = await Product.findById(shop);
     if (!shopExists) {
       return res.status(404).json({ message: 'Shop not found' });
     }
@@ -73,7 +72,7 @@ const updateProduct = async (req, res) => {
 
     // Validate the shop if provided
     if (shop) {
-      const shopExists = await Shop.findById(shop);
+      const shopExists = await Product.findById(shop);
       if (!shopExists) {
         return res.status(404).json({ message: 'Shop not found' });
       }
@@ -218,4 +217,36 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-module.exports = { createProduct, getSingleProduct, getShopProducts, getCategoryProducts, getSubCategoryProducts, getAllProducts, updateProduct, deleteProduct };
+// Delete multiple products
+const deleteProducts = async (req, res) => {
+  const { productIds } = req.body;
+  console.log(req.body);
+
+  if (!Array.isArray(productIds) || productIds.length === 0) {
+    return res.status(400).json({ message: 'Invalid Product IDs' });
+  }
+
+  try {
+    // Fetch products to get logos and banners
+    const products = await Product.find({ _id: { $in: productIds } });
+
+    if (products.length === 0) {
+      return res.status(404).json({ message: 'No products found for the provided IDs' });
+    }
+
+    // Collect images file paths for deletion
+    const filesToDelete = products.flatMap(product => [...product.images]);
+
+    // Delete the files
+    await deleteFiles(filesToDelete);
+
+    // Delete products
+    await Product.deleteMany({ _id: { $in: productIds } });
+
+    res.status(200).json({ message: 'Products deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete products', error: error.message });
+  }
+};
+
+module.exports = { createProduct, getSingleProduct, getShopProducts, getCategoryProducts, getSubCategoryProducts, getAllProducts, updateProduct, deleteProduct, deleteProducts };
