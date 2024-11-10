@@ -15,7 +15,7 @@ const deleteFiles = async (files) => {
 
 // Create product with advance money option and multiple images
 const createProduct = async (req, res) => {
-  let images = [];
+  let images;
   try {
     const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, advanceMoney, originCountry, manufacturer, model, brand } = req.body;
     images = req.files ? req.files.map(file => file.path) : [];
@@ -51,7 +51,7 @@ const createProduct = async (req, res) => {
     await newProduct.save();
     res.status(201).json(newProduct);
   } catch (error) {
-    await deleteFiles(req.files['images'] ? req.files['images'].map(file => file.path) : []);
+    await deleteFiles(images);
     console.error('Failed to create product:', error);
     res.status(500).json({ message: 'Failed to create product', error: error.message });
   }
@@ -59,7 +59,7 @@ const createProduct = async (req, res) => {
 
 // Update product
 const updateProduct = async (req, res) => {
-  let newImages = [];
+  let newImages;
   try {
     const { id } = req.params;
     const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, advanceMoney, originCountry, manufacturer, model, brand } = req.body;
@@ -108,9 +108,7 @@ const updateProduct = async (req, res) => {
 
     res.status(200).json(updatedProduct);
   } catch (error) {
-    if (newImages) {
-      await deleteFiles(newImages);
-    }
+    await deleteFiles(newImages);
     console.error('Failed to update product:', error);
     res.status(500).json({ message: 'Failed to update product', error: error.message });
   }
