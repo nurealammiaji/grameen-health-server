@@ -3,8 +3,6 @@ const productRoutes = express.Router();
 const { createProduct, getSingleProduct, getAllProducts, updateProduct, deleteProduct, getShopProducts, getCategoryProducts, getSubCategoryProducts, deleteProducts } = require('../controllers/productController');
 const upload = require('../middlewares/uploadMiddleware');
 
-// Routes
-// productRoutes.post('/products/create', createProduct);
 productRoutes.post('/products/create', upload.array('images[]', 5), createProduct);
 productRoutes.put('/products/update/:id', upload.array('images[]', 5), updateProduct);
 productRoutes.get('/products/read', getAllProducts);

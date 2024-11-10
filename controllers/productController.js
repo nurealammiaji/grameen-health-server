@@ -1,4 +1,5 @@
 const Product = require('../models/productModel');
+const Shop = require('../models/shopModel');
 const fs = require('fs/promises');
 
 // Helper function to delete files
@@ -23,8 +24,9 @@ const createProduct = async (req, res) => {
     console.log('Files:', req.files);
 
     // Validate the shop
-    const shopExists = await Product.findById(shop);
+    const shopExists = await Shop.findById(shop);
     if (!shopExists) {
+      console.log("Shop not found");
       return res.status(404).json({ message: 'Shop not found' });
     }
 
@@ -49,9 +51,7 @@ const createProduct = async (req, res) => {
     await newProduct.save();
     res.status(201).json(newProduct);
   } catch (error) {
-    if (images) {
-      await deleteFiles(images);
-    }
+    await deleteFiles(req.files['images'] ? req.files['images'].map(file => file.path) : []);
     console.error('Failed to create product:', error);
     res.status(500).json({ message: 'Failed to create product', error: error.message });
   }
@@ -72,7 +72,7 @@ const updateProduct = async (req, res) => {
 
     // Validate the shop if provided
     if (shop) {
-      const shopExists = await Product.findById(shop);
+      const shopExists = await Shop.findById(shop);
       if (!shopExists) {
         return res.status(404).json({ message: 'Shop not found' });
       }
