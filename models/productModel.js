@@ -77,6 +77,16 @@ const productSchema = new mongoose.Schema({
         type: String,
         default: null,
     },
+    rating: {
+        type: Number,
+        required: true,
+        min: 1,
+        max: 5,
+    },
+    reviews: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Review',
+    }],
 }, { timestamps: true });
 
 const Product = mongoose.model('Product', productSchema);
