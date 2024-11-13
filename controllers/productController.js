@@ -17,7 +17,7 @@ const deleteFiles = async (files) => {
 const createProduct = async (req, res) => {
   let images;
   try {
-    const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, advanceMoney, originCountry, manufacturer, model, brand, status, campaign } = req.body;
+    const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, advanceMoney, originCountry, manufacturer, model, brand, status, campaign, rating, reviews } = req.body;
     images = req.files ? req.files.map(file => file.path) : [];
 
     console.log('Request Body:', req.body);
@@ -48,6 +48,8 @@ const createProduct = async (req, res) => {
       brand,
       status,
       campaign,
+      rating,
+      reviews,
     });
 
     await newProduct.save();
@@ -64,7 +66,7 @@ const updateProduct = async (req, res) => {
   let newImages;
   try {
     const { id } = req.params;
-    const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, advanceMoney, originCountry, manufacturer, model, brand, status, campaign } = req.body;
+    const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, advanceMoney, originCountry, manufacturer, model, brand, status, campaign, rating, reviews } = req.body;
     newImages = req.files ? req.files.map(file => file.path) : [];
 
     const product = await Product.findById(id);
@@ -103,6 +105,8 @@ const updateProduct = async (req, res) => {
       brand: brand || product.brand,
       status: status || product.status,
       campaign: campaign || product.campaign,
+      rating: rating || product.rating,
+      reviews: reviews || product.reviews,
     };
 
     const updatedProduct = await Product.findByIdAndUpdate(id, updatedFields, { new: true });
