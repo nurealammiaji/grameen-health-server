@@ -19,6 +19,7 @@ const createProduct = async (req, res) => {
   try {
     const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, advanceMoney, originCountry, manufacturer, model, brand, status, campaign, rating, reviews } = req.body;
     images = req.files ? req.files.map(file => file.path) : [];
+    const parsedVariants = JSON.parse(variants);
 
     console.log('Request Body:', req.body);
     console.log('Files:', req.files);
@@ -37,7 +38,7 @@ const createProduct = async (req, res) => {
       specialPrice,
       category,
       subCategory,
-      variants,
+      variants: parsedVariants,
       images,
       shop,
       quantity,
@@ -68,6 +69,7 @@ const updateProduct = async (req, res) => {
     const { id } = req.params;
     const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, advanceMoney, originCountry, manufacturer, model, brand, status, campaign, rating, reviews } = req.body;
     newImages = req.files ? req.files.map(file => file.path) : [];
+    const parsedVariants = JSON.parse(variants);
 
     const product = await Product.findById(id);
     if (!product) {
@@ -94,7 +96,7 @@ const updateProduct = async (req, res) => {
       specialPrice: specialPrice || product.specialPrice,
       category: category || product.category,
       subCategory: subCategory || product.subCategory,
-      variants: variants || product.variants,
+      variants: parsedVariants || product.variants,
       images: newImages.length > 0 ? newImages : product.images,
       shop: shop || product.shop,
       quantity: quantity || product.quantity,
