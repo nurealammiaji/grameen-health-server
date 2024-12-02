@@ -13,6 +13,7 @@ const typeMappings = {
     user: 'usr',
     product: 'prd',
     carousel: 'crs',
+    campaign: 'cmp',
     shop: 'shp',
     category: 'ctg',
     subCategory: 'sbCtg',

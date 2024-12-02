@@ -57,20 +57,16 @@ const updateCategory = async (req, res) => {
         newImage = req.file ? req.file.path : null;
 
         // Update category item, store the old image path for deletion if needed
-        const updatedCategory = await Category.findByIdAndUpdate(
-            id,
-            {
-                type: type || category.type,
-                name: name || category.name,
-                description: description || category.description,
-                status: status !== undefined ? status : category.status,
-                image: newImage || category.image,
-            },
-            { new: true }
-        );
+        const updatedCategory = await Category.findByIdAndUpdate(id, {
+            type: type || category.type,
+            name: name || category.name,
+            description: description || category.description,
+            status: status !== undefined ? status : category.status,
+            image: newImage || category.image,
+        }, { new: true });
 
         if (!updatedCategory) {
-            return res.status(404).json({ message: 'Category not found' });
+            return res.status(404).json({ message: 'Category is not updated' });
         }
 
         // Delete the old image if a new image is uploaded
@@ -149,7 +145,7 @@ const deleteCategories = async (req, res) => {
     }
 
     try {
-        // Find all carousel items by the provided IDs
+        // Find all category items by the provided IDs
         const categories = await Category.find({ _id: { $in: categoryIds } });
 
         if (categories.length === 0) {
