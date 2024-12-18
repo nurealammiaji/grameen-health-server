@@ -20,6 +20,8 @@ const createCampaign = async (req, res) => {
         const { name, description, campaignType, campaignURL, startDate, endDate, discountPercent, status } = req.body;
         image = req.file ? req.file.path : null;
 
+        console.log(req.body);
+
         const newCampaign = new Campaign({
             name,
             image,
