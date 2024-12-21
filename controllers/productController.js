@@ -20,6 +20,7 @@ const createProduct = async (req, res) => {
     const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, advanceMoney, originCountry, manufacturer, model, brand, status, campaign, rating, reviews } = req.body;
     images = req.files ? req.files.map(file => file.path) : [];
     const parsedVariants = JSON.parse(variants);
+    const parsedCampaign = JSON.parse(campaign);
 
     console.log('Request Body:', req.body);
     console.log('Files:', req.files);
@@ -39,6 +40,7 @@ const createProduct = async (req, res) => {
       category,
       subCategory,
       variants: parsedVariants,
+      campaign: parsedCampaign,
       images,
       shop,
       quantity,
@@ -48,7 +50,6 @@ const createProduct = async (req, res) => {
       model,
       brand,
       status,
-      campaign,
       rating,
       reviews,
     });
@@ -70,6 +71,7 @@ const updateProduct = async (req, res) => {
     const { name, description, price, specialPrice, category, subCategory, variants, shop, quantity, advanceMoney, originCountry, manufacturer, model, brand, status, campaign, rating, reviews } = req.body;
     newImages = req.files ? req.files.map(file => file.path) : [];
     const parsedVariants = JSON.parse(variants);
+    const parsedCampaign = JSON.parse(campaign);
 
     const product = await Product.findById(id);
     if (!product) {
@@ -97,6 +99,7 @@ const updateProduct = async (req, res) => {
       category: category || product.category,
       subCategory: subCategory || product.subCategory,
       variants: parsedVariants || product.variants,
+      campaign: parsedCampaign || product.campaign,
       images: newImages.length > 0 ? newImages : product.images,
       shop: shop || product.shop,
       quantity: quantity || product.quantity,
@@ -106,7 +109,6 @@ const updateProduct = async (req, res) => {
       model: model || product.model,
       brand: brand || product.brand,
       status: status || product.status,
-      campaign: campaign || product.campaign,
       rating: rating || product.rating,
       reviews: reviews || product.reviews,
     };
