@@ -17,7 +17,7 @@ const deleteImage = async (imagePath) => {
 const createCampaign = async (req, res) => {
     let image;
     try {
-        const { name, description, campaignType, campaignURL, startDate, endDate, discountPercent, status } = req.body;
+        const { name, description, campaignType, startDate, endDate, discountPercent, status } = req.body;
         image = req.file ? req.file.path : null;
 
         console.log(req.body);
@@ -27,7 +27,6 @@ const createCampaign = async (req, res) => {
             image,
             description,
             campaignType,
-            campaignURL,
             startDate,
             endDate,
             discountPercent,
@@ -50,7 +49,7 @@ const updateCampaign = async (req, res) => {
     let newImage;
     try {
         const { id } = req.params;
-        const { name, description, campaignType, campaignURL, startDate, endDate, discountPercent, status } = req.body;
+        const { name, description, campaignType, startDate, endDate, discountPercent, status } = req.body;
         newImage = req.file ? req.file.path : null;
 
         const campaign = await Campaign.findById(id);
@@ -60,9 +59,9 @@ const updateCampaign = async (req, res) => {
 
         const updatedCampaign = await Campaign.findByIdAndUpdate(id, {
             name: name || campaign.name,
+            image: newImage || campaign.image,
             description: description || campaign.description,
             campaignType: campaignType || campaign.campaignType,
-            campaignURL: campaignURL || campaign.campaignURL,
             startDate: startDate || campaign.startDate,
             endDate: endDate || campaign.endDate,
             discountPercent: discountPercent || campaign.discountPercent,
