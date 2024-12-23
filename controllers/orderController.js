@@ -1,4 +1,5 @@
 const Order = require('../models/orderModel');
+const Product = require('../models/productModel');
 
 // Function to calculate shipping charge based on delivery address
 const calculateShippingCharge = (deliveryAddress) => {
