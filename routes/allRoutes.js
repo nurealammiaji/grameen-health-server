@@ -11,7 +11,6 @@ const carouselRoutes = require("./carouselRoutes");
 const categoryRoutes = require("./categoryRoutes");
 const subCategoryRoutes = require("./subCategoryRoutes");
 const campaignRoutes = require("./campaignRoutes");
-const paymentRoutes = require("./paymentRoutes");
 const reviewRoutes = require("./reviewRoutes");
 const searchRoutes = require("./searchRoutes");
 
@@ -26,7 +25,6 @@ allRoutes.use(carouselRoutes);
 allRoutes.use(categoryRoutes);
 allRoutes.use(subCategoryRoutes);
 allRoutes.use(campaignRoutes);
-allRoutes.use(paymentRoutes);
 allRoutes.use(reviewRoutes);
 allRoutes.use(searchRoutes);
 
