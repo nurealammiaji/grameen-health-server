@@ -8,7 +8,7 @@ const paymentSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['MFS', 'bank', 'cash_on_delivery'],
+        enum: ['MFS', 'bank', 'COD'],
         required: true
     },
     status: {
@@ -19,7 +19,7 @@ const paymentSchema = new mongoose.Schema({
     transactionId: {
         type: String,
         required: function () {
-            return this.paymentMethod !== 'cash_on_delivery';
+            return this.paymentMethod !== 'COD';
         }
     },
     amount: {
